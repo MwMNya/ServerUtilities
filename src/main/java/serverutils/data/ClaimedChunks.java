@@ -20,6 +20,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -242,6 +243,9 @@ public class ClaimedChunks {
     }
 
     public static boolean blockBlockEditing(EntityPlayer player, int x, int y, int z, int meta) {
+        if (player instanceof FakePlayer && player.dimension == 0) {
+            return true;
+        }
         if (!isActive() || player.worldObj == null
                 || !(player instanceof EntityPlayerMP)
                 || !ServerUtilitiesConfig.teams.grief_protection) {
