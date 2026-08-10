@@ -44,6 +44,7 @@ public class ServerUtilitiesConfig {
     public static final MOTD motd = new MOTD();
     public static final Transfer transfer = new Transfer();
     public static final Tab tab = new Tab();
+    public static final Dimension dimension = new Dimension();
 
     public static class General {
 
@@ -843,5 +844,24 @@ public class ServerUtilitiesConfig {
         @Config.DefaultString("&7Ping: &a< 150ms &e< 300ms &c< 600ms &4< 1000ms &8>= 1000ms\\n&8Powered by &dServerUtilities")
         @Config.Sync
         public String footerText;
+    }
+
+    public static class Dimension {
+
+        @Config.Comment("Whether enable mining dimension that MwMNya added.")
+        @Config.DefaultBoolean(false)
+        public boolean enableMiningDimension;
+
+        @Config.Comment("The dimension ID of the mining dimension. Make sure it doesn't conflict with other dimensions.")
+        @Config.DefaultInt(1145)
+        public int miningDimensionId;
+
+        @Config.Comment("The dimension ID of the mining dimension underground. Make sure it doesn't conflict with other dimensions.")
+        @Config.DefaultInt(1146)
+        public int miningDimensionIdUnderground;
+
+        @Config.Comment("The dimension of which digital miner will be blocked from mining claimed chunks ignoring any permissions.")
+        @Config.DefaultIntList({0})
+        public int[] digitalMinerBlacklistDimensions;
     }
 }

@@ -1,13 +1,6 @@
 package serverutils.data;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.OptionalInt;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.Nullable;
 
@@ -20,6 +13,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -29,6 +23,8 @@ import com.gtnewhorizon.gtnhlib.eventbus.EventBusSubscriber;
 
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import ic2.api.event.LaserEvent;
+import serverutils.ServerUtilities;
 import serverutils.ServerUtilitiesConfig;
 import serverutils.ServerUtilitiesNotifications;
 import serverutils.ServerUtilitiesPermissions;
@@ -243,7 +239,9 @@ public class ClaimedChunks {
     }
 
     public static boolean blockBlockEditing(EntityPlayer player, int x, int y, int z, int meta) {
-        if (player instanceof FakePlayer && player.dimension == 0) {
+        if (player instanceof FakePlayer && Arrays.stream(
+                ServerUtilitiesConfig.dimension.digitalMinerBlacklistDimensions)
+                .anyMatch(d -> d == player.dimension)) {
             return true;
         }
         if (!isActive() || player.worldObj == null
@@ -312,6 +310,15 @@ public class ClaimedChunks {
 
     public ClaimResult claimChunk(ForgePlayer player, ChunkDimPos pos) {
         return claimChunk(player, pos, true);
+    }
+
+    public boolean isChunkClaimed(World world, int x, int y, int z) {
+        if (!isActive()) {
+            return false;
+        }
+
+        ClaimedChunk chunk = getChunk(new ChunkDimPos(x, y, z, world.provider.dimensionId));
+        return chunk != null;
     }
 
     public ClaimResult claimChunk(ForgePlayer player, ChunkDimPos pos, boolean checkLimits) {
@@ -492,6 +499,22 @@ public class ClaimedChunks {
     public static void onBlockPlace(BlockEvent.PlaceEvent event) {
         if (blockBlockEditing(event.player, event.x, event.y, event.z, 0)) {
             InvUtils.forceUpdate(event.player);
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onLaserBreak(LaserEvent.LaserHitsBlockEvent event) {
+        EntityPlayer player = (EntityPlayer) event.owner;
+        if (blockBlockEditing(player, event.x, event.y, event.z, 0)) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onLaserHitsEntity(LaserEvent.LaserHitsEntityEvent event) {
+        EntityPlayer player = (EntityPlayer) event.owner;
+        if (!canAttackEntity(player, event.hitentity)) {
             event.setCanceled(true);
         }
     }
