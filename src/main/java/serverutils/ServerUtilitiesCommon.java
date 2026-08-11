@@ -14,6 +14,7 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 
 import net.minecraft.util.IChatComponent;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -35,6 +36,8 @@ import serverutils.aurora.Aurora;
 import serverutils.aurora.AuroraConfig;
 import serverutils.command.ServerUtilitiesCommands;
 import serverutils.data.ServerUtilitiesLoadedChunkManager;
+import serverutils.dimension.ResourceWorldProvider;
+import serverutils.dimension.ResourceWorldProviderUnderground;
 import serverutils.events.ServerReloadEvent;
 import serverutils.handlers.ServerUtilitiesServerEventHandler;
 import serverutils.lib.OtherMods;
@@ -82,6 +85,23 @@ public class ServerUtilitiesCommon {
         OtherMods.init();
         if (ranks.enabled) {
             PermissionAPI.setPermissionHandler(ServerUtilitiesPermissionHandler.INSTANCE);
+        }
+
+        if(ServerUtilitiesConfig.dimension.enableMiningDimension){
+            DimensionManager.registerProviderType(
+                    ServerUtilitiesConfig.dimension.miningDimensionId,
+                    ResourceWorldProvider.class,
+                    false);
+            DimensionManager.registerDimension(
+                    ServerUtilitiesConfig.dimension.miningDimensionId,
+                    ServerUtilitiesConfig.dimension.miningDimensionId);
+            DimensionManager.registerProviderType(
+                    ServerUtilitiesConfig.dimension.miningDimensionIdUnderground,
+                    ResourceWorldProviderUnderground.class,
+                    false);
+            DimensionManager.registerDimension(
+                    ServerUtilitiesConfig.dimension.miningDimensionIdUnderground,
+                    ServerUtilitiesConfig.dimension.miningDimensionIdUnderground);
         }
 
         ServerUtilitiesStats.init();
