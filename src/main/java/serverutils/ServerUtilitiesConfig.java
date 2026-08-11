@@ -3,6 +3,7 @@ package serverutils;
 import java.util.ArrayList;
 import java.util.List;
 
+import codechicken.nei.shadow.org.antlr.v4.runtime.misc.IntegerList;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -45,6 +46,7 @@ public class ServerUtilitiesConfig {
     public static final Transfer transfer = new Transfer();
     public static final Tab tab = new Tab();
     public static final Dimension dimension = new Dimension();
+    public static final RTP rtp = new RTP();
 
     public static class General {
 
@@ -863,5 +865,29 @@ public class ServerUtilitiesConfig {
         @Config.Comment("The dimension of which digital miner will be blocked from mining claimed chunks ignoring any permissions.")
         @Config.DefaultIntList({0})
         public int[] digitalMinerBlacklistDimensions;
+    }
+
+    public static class RTP {
+
+        @Config.Comment("Enable RTP Chunks Pregeneration. This will pregen chunks for /rtp command to make it faster.")
+        @Config.DefaultBoolean(false)
+        public boolean enableRTPPreGen;
+
+        @Config.Comment("Dimensions ID that you wish to pregen for /rtp command.")
+        @Config.DefaultIntList({1145, 1146, 7})
+        public IntegerList rtpPreGenDimensions;
+
+        @Config.Comment("Speed per second for RTP PreGem command. This will limit the number of chunks that will be pregenerated per tick for /rtp command.")
+        @Config.DefaultInt(1)
+        public int rtpPreGenSpeedPerSecond;
+
+        @Config.Comment("The radius chunk of chunks to pregen around the spawn point. This will pregen chunks in a square area around the spawn point.")
+        @Config.DefaultInt(5)
+        public int rtpPreGenRadius;
+
+        @Config.Comment("Max number of chunk sets to pregen for /rtp command. This will limit the number of chunk sets that will be pregenerated for /rtp command.")
+        @Config.DefaultInt(3)
+        public int maxRTPPreGenChunkSetsNumber;
+
     }
 }
