@@ -115,11 +115,13 @@ public class ServerUtilitiesPermissions {
     public static final String SPAWN_COOLDOWN = "serverutilities.spawn.cooldown";
     public static final String BACK_COOLDOWN = "serverutilities.back.cooldown";
     public static final String RTP_COOLDOWN = "serverutilities.rtp.cooldown";
+    public static final String END_COOLDOWN = "serverutilities.end.cooldown";
 
     public static final String TPA_WARMUP = "serverutilities.tpa.warmup";
     public static final String SPAWN_WARMUP = "serverutilities.spawn.warmup";
     public static final String BACK_WARMUP = "serverutilities.back.warmup";
     public static final String RTP_WARMUP = "serverutilities.rtp.warmup";
+    public static final String END_WARMUP = "serverutilities.end.warmup";
 
     public static final String TPA_CROSS_DIM = "serverutilities.tpa.cross_dim";
     public static final String AFK_TIMER = "serverutilities.afk.timer";
@@ -130,6 +132,9 @@ public class ServerUtilitiesPermissions {
 
     public static final String CLAIMS_JOURNEYMAP = "serverutilities.journeymap.enable";
     public static final String CLAIMS_JOURNEYMAP_OTHER = "serverutilities.journeymap.other";
+
+    public static final String RTP = "serverutilties.rtp";
+    public static final String END = "serverutilties.end";
 
     static void init() {
         registerPermissions();
@@ -267,6 +272,9 @@ public class ServerUtilitiesPermissions {
                 BYPASS_WHITELIST,
                 DefaultPermissionLevel.OP,
                 "Allow player to join while not whitelisted");
+
+        PermissionAPI.registerNode(RTP, DefaultPermissionLevel.ALL, "Allow all player to rtp");
+        PermissionAPI.registerNode(END, DefaultPermissionLevel.ALL, "Allow all player to teleport to the end");
 
         for (Block block : GameData.getBlockRegistry().typeSafeIterable()) {
             String name = formatId(block);

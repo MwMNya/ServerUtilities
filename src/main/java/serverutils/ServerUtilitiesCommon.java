@@ -87,7 +87,7 @@ public class ServerUtilitiesCommon {
             PermissionAPI.setPermissionHandler(ServerUtilitiesPermissionHandler.INSTANCE);
         }
 
-        if(ServerUtilitiesConfig.dimension.enableMiningDimension){
+        if (ServerUtilitiesConfig.dimension.enableMiningDimension) {
             DimensionManager.registerProviderType(
                     ServerUtilitiesConfig.dimension.miningDimensionId,
                     ResourceWorldProvider.class,

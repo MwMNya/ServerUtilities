@@ -9,19 +9,9 @@ import serverutils.command.chunks.CmdChunks;
 import serverutils.command.pausewhenempty.CmdPauseWhenEmpty;
 import serverutils.command.pregen.CmdPregen;
 import serverutils.command.ranks.CmdRanks;
+import serverutils.command.rtp.CmdRTP;
 import serverutils.command.team.CmdTeam;
-import serverutils.command.tp.CmdBack;
-import serverutils.command.tp.CmdDelHome;
-import serverutils.command.tp.CmdDelWarp;
-import serverutils.command.tp.CmdHome;
-import serverutils.command.tp.CmdRTP;
-import serverutils.command.tp.CmdSetHome;
-import serverutils.command.tp.CmdSetWarp;
-import serverutils.command.tp.CmdSpawn;
-import serverutils.command.tp.CmdTPA;
-import serverutils.command.tp.CmdTPAccept;
-import serverutils.command.tp.CmdTplast;
-import serverutils.command.tp.CmdWarp;
+import serverutils.command.tp.*;
 
 public class ServerUtilitiesCommands {
 
@@ -135,6 +125,10 @@ public class ServerUtilitiesCommands {
 
         if (commands.rtp) {
             event.registerServerCommand(new CmdRTP());
+        }
+
+        if (commands.end) {
+            event.registerServerCommand(new CmdEnd());
         }
 
         if (commands.god) {

@@ -484,6 +484,9 @@ serverutilities.lang.tpa.request_accepted=传送请求已被接受！
 
 # RTP
 serverutilities.lang.rtp.fail=无法找到有效的位置进行传送！
+serverutilities.lang.rtp.no_permission=你没有随机传送的权限！
+serverutilities.lang.rtp.successfully=随机传送成功.
+serverutilities.lang.rtp.successfully1=随机传送成功 .
 
 # Client Commands
 commands.client_config.usage=/client_config

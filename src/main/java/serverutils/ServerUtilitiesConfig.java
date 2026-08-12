@@ -3,7 +3,6 @@ package serverutils;
 import java.util.ArrayList;
 import java.util.List;
 
-import codechicken.nei.shadow.org.antlr.v4.runtime.misc.IntegerList;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -212,6 +211,9 @@ public class ServerUtilitiesConfig {
 
         @Config.DefaultBoolean(true)
         public boolean warp;
+
+        @Config.DefaultBoolean(true)
+        public boolean end;
 
         @Config.DefaultBoolean(true)
         public boolean home;
@@ -574,6 +576,14 @@ public class ServerUtilitiesConfig {
         @Config.DefaultInt(0)
         public int spawn_dimension;
 
+        @Config.Comment("End dimension.")
+        @Config.DefaultInt(1)
+        public int end_dimension;
+
+        @Config.Comment("Nether dimension.")
+        @Config.DefaultInt(-1)
+        public int nether_dimension;
+
         @Config.Comment("Unloads erroring chunks if dimension isn't loaded or some other problem occurs.")
         @Config.DefaultBoolean(false)
         public boolean unload_erroring_chunks;
@@ -863,7 +873,7 @@ public class ServerUtilitiesConfig {
         public int miningDimensionIdUnderground;
 
         @Config.Comment("The dimension of which digital miner will be blocked from mining claimed chunks ignoring any permissions.")
-        @Config.DefaultIntList({0})
+        @Config.DefaultIntList({ 0 })
         public int[] digitalMinerBlacklistDimensions;
     }
 
@@ -874,8 +884,8 @@ public class ServerUtilitiesConfig {
         public boolean enableRTPPreGen;
 
         @Config.Comment("Dimensions ID that you wish to pregen for /rtp command.")
-        @Config.DefaultIntList({1145, 1146, 7})
-        public IntegerList rtpPreGenDimensions;
+        @Config.DefaultIntList({ 1145, 1146, 7 })
+        public int[] rtpPreGenDimensions;
 
         @Config.Comment("Speed per second for RTP PreGem command. This will limit the number of chunks that will be pregenerated per tick for /rtp command.")
         @Config.DefaultInt(1)
@@ -889,5 +899,8 @@ public class ServerUtilitiesConfig {
         @Config.DefaultInt(3)
         public int maxRTPPreGenChunkSetsNumber;
 
+        @Config.Comment("Dimension ID of Twilight Forest, needed by RTP.")
+        @Config.DefaultInt(7)
+        public int twilightForestDimensionID;
     }
 }

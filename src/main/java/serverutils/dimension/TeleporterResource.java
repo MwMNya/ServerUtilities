@@ -10,9 +10,8 @@ public class TeleporterResource extends Teleporter {
         super(worldServer);
     }
 
-
     @Override
-    public void placeInPortal(Entity entity, double x, double y, double z, float yaw){
+    public void placeInPortal(Entity entity, double x, double y, double z, float yaw) {
 
         entity.setPosition(x, y, z);
 

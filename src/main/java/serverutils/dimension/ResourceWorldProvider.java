@@ -15,19 +15,12 @@ public class ResourceWorldProvider extends WorldProvider {
     @Override
     public IChunkProvider createChunkGenerator() {
         long seed = -1157601049474163180L;
-        return new ChunkProviderGenerate(
-                worldObj, seed, true
-        );
+        return new ChunkProviderGenerate(worldObj, seed, true);
     }
 
     @Override
     public String getDimensionName() {
         return "Resource World";
-    }
-
-    @Override
-    public String getInternalName() {
-        return "resource_world";
     }
 
     @Override
@@ -37,6 +30,6 @@ public class ResourceWorldProvider extends WorldProvider {
 
     @Override
     public boolean canRespawnHere() {
-        return super.canRespawnHere();
+        return false;
     }
 }

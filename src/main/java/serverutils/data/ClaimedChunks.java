@@ -1,6 +1,14 @@
 package serverutils.data;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.OptionalInt;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -24,7 +32,6 @@ import com.gtnewhorizon.gtnhlib.eventbus.EventBusSubscriber;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import ic2.api.event.LaserEvent;
-import serverutils.ServerUtilities;
 import serverutils.ServerUtilitiesConfig;
 import serverutils.ServerUtilitiesNotifications;
 import serverutils.ServerUtilitiesPermissions;
@@ -239,9 +246,9 @@ public class ClaimedChunks {
     }
 
     public static boolean blockBlockEditing(EntityPlayer player, int x, int y, int z, int meta) {
-        if (player instanceof FakePlayer && Arrays.stream(
-                ServerUtilitiesConfig.dimension.digitalMinerBlacklistDimensions)
-                .anyMatch(d -> d == player.dimension)) {
+        if (player instanceof FakePlayer
+                && Arrays.stream(ServerUtilitiesConfig.dimension.digitalMinerBlacklistDimensions)
+                        .anyMatch(d -> d == player.dimension)) {
             return true;
         }
         if (!isActive() || player.worldObj == null

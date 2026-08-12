@@ -635,6 +635,9 @@ serverutilities.lang.tpa.request_accepted=TPA Request accepted!
 
 # RTP
 serverutilities.lang.rtp.fail=Could not find a valid location to teleport to!
+serverutilities.lang.rtp.no_permission=You have no permission to rtp.
+serverutilities.lang.rtp.successfully=RTP Successfully.
+serverutilities.lang.rtp.successfully1=RTP Successfully .
 
 # Client Commands
 commands.client_config.usage=/client_config
@@ -831,3 +834,4 @@ serverutilities.invsee.battlegear=Battlegear
 serverutilities.invsee.tic_bag=TiC Bag & Accessories
 serverutilities.invsee.galacticraft=Galacticraft
 serverutilities.invsee.gc_items=GC Items
+
