@@ -654,3 +654,5 @@ serverutilities.jm.own_team=你的组
 serverutilities.jm.claim=双击一个空白区块进行声明。
 serverutilities.jm.load_hint=双击一个已声明的区块来加载/卸载
 serverutilities.jm.unclaim_hint=按下 %s 来解除声明
+
+serverutilities.lang.setspawn.successfully=成功设置重生点.

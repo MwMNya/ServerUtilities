@@ -170,9 +170,8 @@ public class RTPPreGenManager {
             TeleporterDimPos pos;
             if (dimension == ServerUtilitiesConfig.dimension.miningDimensionIdUnderground) {
                 pos = findBlockPosUnderground(world, 0);
-
             }
-            if (dimension == ServerUtilitiesConfig.world.nether_dimension) {
+            else if (dimension == ServerUtilitiesConfig.world.nether_dimension) {
                 pos = findNetherBlockPos(world, 0);
             } else {
 
