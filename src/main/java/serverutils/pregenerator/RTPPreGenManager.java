@@ -11,19 +11,23 @@ import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.ForgeChunkManager;
 
 import com.gtnewhorizon.gtnhlib.eventbus.EventBusSubscriber;
 
-import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import serverutils.ServerUtilitiesConfig;
 import serverutils.data.ClaimedChunks;
-import serverutils.events.chunks.PreGenPositionPolledEvent;
+import serverutils.data.ServerUtilitiesLoadedChunkManager;
+import serverutils.data.TicketKey;
+import serverutils.events.ServerReloadEvent;
 import serverutils.lib.data.Universe;
 import serverutils.lib.math.ChunkDimPos;
 import serverutils.lib.math.TeleporterDimPos;
@@ -34,6 +38,9 @@ public class RTPPreGenManager {
     private static final Map<Integer, Deque<PregeneratorTask>> tasks = new HashMap<>();
     private static final Map<Integer, List<TeleporterDimPos>> preGenPositions = new HashMap<>();
 
+    private static final Map<Integer, TicketKey> dimKeys = new HashMap<>();
+    private static final Map<Integer, ForgeChunkManager.Ticket> dimTickets = new HashMap<>();
+
     private static int chunkPerSecond = ServerUtilitiesConfig.rtp.rtpPreGenSpeedPerSecond;
 
     private static long lastGenerateTime = 0;
@@ -41,30 +48,61 @@ public class RTPPreGenManager {
     private static final List<Block> UNSAFE_BLOCKS = Arrays
             .asList(Blocks.cactus, Blocks.fire, Blocks.lava, Blocks.water, Blocks.flowing_lava, Blocks.flowing_water);
 
-    public static void start(int dimension, int centerChunkX, int centerChunkZ, int radius) {
+    public static void start(int dimension, int centerChunkX, int centerChunkZ, int radius,
+            TeleporterDimPos teleporterDimPos) {
         tasks.computeIfAbsent(dimension, k -> new LinkedList<>())
-                .offer(new PregeneratorTask(dimension, centerChunkX, centerChunkZ, radius));
+                .offer(new PregeneratorTask(dimension, centerChunkX, centerChunkZ, radius, teleporterDimPos));
     }
 
     @SubscribeEvent
-    public static void onServerStart(FMLServerStartedEvent event) {
+    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (!ServerUtilitiesConfig.rtp.enableRTPPreGen) {
             return;
         }
         for (int dim : ServerUtilitiesConfig.rtp.rtpPreGenDimensions) {
+            keepDimensionLoaded(dim);
             genPreGenChunks(dim);
         }
 
     }
 
     @SubscribeEvent
+    public static void onServerReloadEvent(ServerReloadEvent event) {
+        chunkPerSecond = ServerUtilitiesConfig.rtp.rtpPreGenSpeedPerSecond;
+    }
+
+    public static TicketKey requestTicketKey(int dimension) {
+        MinecraftServer server = Universe.get().server;
+        return dimKeys.computeIfAbsent(dimension, k -> new TicketKey(k, "!**RTP**!"));
+    }
+
+    public static ForgeChunkManager.Ticket requestTicket(int dimension) {
+        MinecraftServer server = Universe.get().server;
+        return dimTickets.computeIfAbsent(
+                dimension,
+                k -> ServerUtilitiesLoadedChunkManager.INSTANCE.requestTicket(server, requestTicketKey(dimension)));
+    }
+
+    public static void keepDimensionLoaded(int dimension) {
+        ForgeChunkManager.forceChunk(requestTicket(dimension), new ChunkCoordIntPair(0, 0));
+    }
+
+    public static void unloadDimension(int dimension) {
+        ForgeChunkManager.unforceChunk(requestTicket(dimension), new ChunkCoordIntPair(0, 0));
+    }
+
+    @SubscribeEvent
     public static void serverTick(TickEvent.ServerTickEvent event) {
 
-        if (event.phase != TickEvent.Phase.END) return;
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
 
         long now = System.currentTimeMillis();
 
-        if (now - lastGenerateTime < 1000) return;
+        if (now - lastGenerateTime < 1000) {
+            return;
+        }
 
         lastGenerateTime = now;
 
@@ -80,31 +118,40 @@ public class RTPPreGenManager {
 
                 PregeneratorTask task = queue.peek();
 
-                if (task.finished()) {
-                    queue.poll();
-                    continue;
+                if (!generate(task)) {
+                    break;
                 }
-                generate(task);
-
                 count--;
 
+                if (task.finished()) {
+
+                    queue.poll();
+
+                    preGenPositions.computeIfAbsent(task.dimension, k -> new ArrayList<>()).add(task.getPos());
+                }
             }
 
-            if (queue.isEmpty()) it.remove();
-
+            if (queue.isEmpty()) {
+                it.remove();
+            }
         }
-
     }
 
-    private static void generate(PregeneratorTask task) {
+    private static boolean generate(PregeneratorTask task) {
         World world = Universe.get().server.worldServerForDimension(task.dimension);
-        if (world == null) return;
+
+        if (world == null) {
+            return false;
+        }
 
         int x = task.nextX();
         int z = task.nextZ();
 
         world.getChunkProvider().provideChunk(x, z);
+
         task.advance();
+
+        return true;
     }
 
     public static TeleporterDimPos getRandomPreGenPosition(int dimension) {
@@ -120,41 +167,24 @@ public class RTPPreGenManager {
 
         TeleporterDimPos pos = list.remove(index);
 
-        MinecraftForge.EVENT_BUS.post(new PreGenPositionPolledEvent(dimension));
+        genPreGenChunks(dimension);
+
         return pos;
-    }
-
-    public static int getRestPreGenPosition(int dimension) {
-        List<TeleporterDimPos> list = preGenPositions.get(dimension);
-
-        if (list == null || list.isEmpty()) {
-            return -1;
-        }
-        return list.size();
-    }
-
-    @SubscribeEvent
-    public static void onPreGenChunkPolled(PreGenPositionPolledEvent event) {
-
-        int dimension = event.getDimension();
-
-        List<TeleporterDimPos> list = preGenPositions.get(dimension);
-
-        if (list == null) {
-            return;
-        }
-
-        if (list.size() <= 1) {
-            genPreGenChunks(dimension);
-        }
     }
 
     public static void genPreGenChunks(int dimension) {
 
-        List<TeleporterDimPos> list = preGenPositions.computeIfAbsent(dimension, k -> new ArrayList<>());
+        if (!ServerUtilitiesConfig.rtp.enableRTPPreGen) {
+            return;
+        }
+
+        Deque<PregeneratorTask> queue = tasks.computeIfAbsent(dimension, k -> new LinkedList<>());
+
+        List<TeleporterDimPos> ready = preGenPositions.computeIfAbsent(dimension, k -> new ArrayList<>());
 
         int max = ServerUtilitiesConfig.rtp.maxRTPPreGenChunkSetsNumber;
-        int need = max - list.size();
+        int current = ready.size() + queue.size();
+        int need = max - current;
 
         if (need <= 0) {
             return;
@@ -170,8 +200,7 @@ public class RTPPreGenManager {
             TeleporterDimPos pos;
             if (dimension == ServerUtilitiesConfig.dimension.miningDimensionIdUnderground) {
                 pos = findBlockPosUnderground(world, 0);
-            }
-            else if (dimension == ServerUtilitiesConfig.world.nether_dimension) {
+            } else if (dimension == ServerUtilitiesConfig.world.nether_dimension) {
                 pos = findNetherBlockPos(world, 0);
             } else {
 
@@ -183,13 +212,12 @@ public class RTPPreGenManager {
                 continue;
             }
 
-            list.add(pos);
-
             start(
                     dimension,
                     MathHelper.floor_double(pos.posX) >> 4,
                     MathHelper.floor_double(pos.posZ) >> 4,
-                    ServerUtilitiesConfig.rtp.rtpPreGenRadius);
+                    ServerUtilitiesConfig.rtp.rtpPreGenRadius,
+                    pos);
         }
     }
 
@@ -251,7 +279,7 @@ public class RTPPreGenManager {
             Block head = world.getBlock(x, y + 2, z);
             if (!feet.equals(Blocks.air) && head.equals(Blocks.air) && !UNSAFE_BLOCKS.contains(feet)) {
 
-                return TeleporterDimPos.of(x + 0.5, y, z + 0.5, world.provider.dimensionId);
+                return TeleporterDimPos.of(x + 0.5, y + 1, z + 0.5, world.provider.dimensionId);
             }
         }
         return findBlockPosUnderground(world, depth);
@@ -267,6 +295,9 @@ public class RTPPreGenManager {
     }
 
     public static TeleporterDimPos findNetherBlockPos(World world, int depth) {
+        if (++depth > ServerUtilitiesConfig.world.rtp_max_tries) {
+            return TeleporterDimPos.of(-1, -1, -1, world.provider.dimensionId);
+        }
 
         double dist = ServerUtilitiesConfig.world.rtp_min_distance + world.rand.nextDouble()
                 * (ServerUtilitiesConfig.world.rtp_max_distance - ServerUtilitiesConfig.world.rtp_min_distance);

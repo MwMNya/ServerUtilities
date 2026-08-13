@@ -1,5 +1,7 @@
 package serverutils.pregenerator;
 
+import serverutils.lib.math.TeleporterDimPos;
+
 public class PregeneratorTask {
 
     public final int dimension;
@@ -11,7 +13,9 @@ public class PregeneratorTask {
     private int x;
     private int z;
 
-    public PregeneratorTask(int dimension, int centerX, int centerZ, int radius) {
+    private final TeleporterDimPos teleporterDimPos;
+
+    public PregeneratorTask(int dimension, int centerX, int centerZ, int radius, TeleporterDimPos teleporterDimPos) {
 
         this.dimension = dimension;
         this.centerX = centerX;
@@ -20,6 +24,8 @@ public class PregeneratorTask {
 
         this.x = -radius;
         this.z = -radius;
+
+        this.teleporterDimPos = teleporterDimPos;
     }
 
     public int nextX() {
@@ -41,8 +47,11 @@ public class PregeneratorTask {
 
     }
 
-    public boolean finished() {
+    public TeleporterDimPos getPos() {
+        return teleporterDimPos;
+    }
 
+    public boolean finished() {
         return x > radius;
     }
 

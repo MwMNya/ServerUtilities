@@ -1,16 +1,17 @@
 package serverutils.command;
 
+import static serverutils.ServerUtilitiesConfig.world;
+
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
+
 import serverutils.ServerUtilities;
 import serverutils.ServerUtilitiesPermissions;
 import serverutils.lib.command.CmdBase;
 import serverutils.lib.util.permission.PermissionAPI;
-
-import static serverutils.ServerUtilitiesConfig.world;
 
 public class CmdSetspawn extends CmdBase {
 

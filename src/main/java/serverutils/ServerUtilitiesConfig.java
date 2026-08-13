@@ -225,6 +225,9 @@ public class ServerUtilitiesConfig {
         public boolean spawn;
 
         @Config.DefaultBoolean(true)
+        public boolean setspawn;
+
+        @Config.DefaultBoolean(true)
         public boolean inv;
 
         @Config.DefaultBoolean(true)
@@ -888,7 +891,7 @@ public class ServerUtilitiesConfig {
         public int[] rtpPreGenDimensions;
 
         @Config.Comment("Speed per second for RTP PreGem command. This will limit the number of chunks that will be pregenerated per tick for /rtp command.")
-        @Config.DefaultInt(1)
+        @Config.DefaultInt(4)
         public int rtpPreGenSpeedPerSecond;
 
         @Config.Comment("The radius chunk of chunks to pregen around the spawn point. This will pregen chunks in a square area around the spawn point.")

@@ -1,11 +1,14 @@
 package serverutils.command.tp;
 
+import static serverutils.ServerUtilitiesConfig.world;
+
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+
 import serverutils.ServerUtilities;
 import serverutils.ServerUtilitiesPermissions;
 import serverutils.data.ServerUtilitiesPlayerData;
@@ -15,8 +18,6 @@ import serverutils.lib.command.CommandUtils;
 import serverutils.lib.math.BlockDimPos;
 import serverutils.lib.math.TeleporterDimPos;
 import serverutils.lib.util.permission.PermissionAPI;
-
-import static serverutils.ServerUtilitiesConfig.world;
 
 public class CmdEnd extends CmdBase {
 
