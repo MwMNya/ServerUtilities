@@ -14,9 +14,9 @@ import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import serverutils.ServerUtilitiesConfig;
@@ -27,7 +27,7 @@ import serverutils.lib.util.StringUtils;
 public class CleanupTask extends Task {
 
     public CleanupTask() {
-        super(Ticks.HOUR.x(tasks.cleanup.interval));
+        super(Ticks.MINUTE.x(tasks.cleanup.interval));
     }
 
     @Override
@@ -51,6 +51,26 @@ public class CleanupTask extends Task {
         if (tasks.cleanup.silent) return notifications;
         notifications.add(
                 new NotifyTask(
+                        nextTime - Ticks.SECOND.x(1).millis(),
+                        CLEANUP.createNotification(getNotificationString(1))));
+        notifications.add(
+                new NotifyTask(
+                        nextTime - Ticks.SECOND.x(2).millis(),
+                        CLEANUP.createNotification(getNotificationString(2))));
+        notifications.add(
+                new NotifyTask(
+                        nextTime - Ticks.SECOND.x(3).millis(),
+                        CLEANUP.createNotification(getNotificationString(3))));
+        notifications.add(
+                new NotifyTask(
+                        nextTime - Ticks.SECOND.x(4).millis(),
+                        CLEANUP.createNotification(getNotificationString(4))));
+        notifications.add(
+                new NotifyTask(
+                        nextTime - Ticks.SECOND.x(5).millis(),
+                        CLEANUP.createNotification(getNotificationString(5))));
+        notifications.add(
+                new NotifyTask(
                         nextTime - Ticks.SECOND.x(30).millis(),
                         CLEANUP.createNotification(getNotificationString(30))));
         notifications.add(
@@ -62,35 +82,42 @@ public class CleanupTask extends Task {
 
     private IChatComponent getNotificationString(int seconds) {
         ServerUtilitiesConfig.Tasks.Cleanup config = tasks.cleanup;
-        StringBuilder builder = new StringBuilder();
+
+        List<IChatComponent> components = new ArrayList<>();
+
         if (config.hostiles) {
-            builder.append(StatCollector.translateToLocal("serverutilities.task.cleanup_hostiles"));
+            components.add(new ChatComponentTranslation("serverutilities.task.cleanup_hostiles"));
         }
+
         if (config.passives) {
-            if (builder.length() > 0) builder.append(", ");
-            builder.append(StatCollector.translateToLocal("serverutilities.task.cleanup_passives"));
+            components.add(new ChatComponentTranslation("serverutilities.task.cleanup_passives"));
         }
+
         if (config.items) {
-            if (builder.length() > 0) builder.append(", ");
-            builder.append(StatCollector.translateToLocal("serverutilities.task.cleanup_items"));
+            components.add(new ChatComponentTranslation("serverutilities.task.cleanup_items"));
         }
+
         if (config.experience) {
-            if (builder.length() > 0) builder.append(", ");
-            builder.append(StatCollector.translateToLocal("serverutilities.task.cleanup_experience"));
+            components.add(new ChatComponentTranslation("serverutilities.task.cleanup_experience"));
         }
 
-        int index = builder.lastIndexOf(",");
+        ChatComponentText entityText = new ChatComponentText("");
 
-        if (index > 0) {
-            builder.replace(index, index + 1, " &");
+        for (int i = 0; i < components.size(); i++) {
+            if (i > 0) {
+                if (i == components.size() - 1) {
+                    entityText.appendText(" & ");
+                } else {
+                    entityText.appendText(", ");
+                }
+            }
+
+            entityText.appendSibling(components.get(i));
         }
 
-        String finalString = StatCollector.translateToLocalFormatted(
-                "serverutilities.task.cleanup_entity",
-                builder.toString().toLowerCase(),
-                seconds);
-
-        return StringUtils.color(new ChatComponentText(finalString), EnumChatFormatting.LIGHT_PURPLE);
+        return StringUtils.color(
+                new ChatComponentTranslation("serverutilities.task.cleanup_entity", entityText, seconds),
+                EnumChatFormatting.LIGHT_PURPLE);
     }
 
     private static boolean shouldDespawn(Entity entity) {

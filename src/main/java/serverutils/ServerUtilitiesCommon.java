@@ -52,6 +52,7 @@ import serverutils.net.ServerUtilitiesNetHandler;
 import serverutils.ranks.ICommandWithPermission;
 import serverutils.ranks.Rank;
 import serverutils.ranks.ServerUtilitiesPermissionHandler;
+import serverutils.task.AnnouncementTask;
 import serverutils.task.CleanupTask;
 import serverutils.task.DecayTask;
 import serverutils.task.ShutdownTask;
@@ -193,6 +194,7 @@ public class ServerUtilitiesCommon {
         universe.scheduleTask(new DecayTask(), world.chunk_claiming);
         universe.scheduleTask(new CleanupTask(), tasks.cleanup.enabled);
         universe.scheduleTask(new BackupTask(), backups.enable_backups);
+        universe.scheduleTask(new AnnouncementTask(), tasks.announcement.enabled);
         if (auto_shutdown.enabled && auto_shutdown.times.length > 0
                 && (auto_shutdown.enabled_singleplayer || universe.server.isDedicatedServer())) {
             universe.scheduleTask(new ShutdownTask());

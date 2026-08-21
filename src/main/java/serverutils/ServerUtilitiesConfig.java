@@ -737,7 +737,7 @@ public class ServerUtilitiesConfig {
             @Config.LangKey("serverutilities.config.enabled")
             public boolean enabled;
 
-            @Config.Comment("How often the cleanup should run in hours")
+            @Config.Comment("How often the cleanup should run in minutes")
             @Config.DefaultDouble(2)
             public double interval;
 
@@ -762,6 +762,22 @@ public class ServerUtilitiesConfig {
             public boolean silent;
         }
 
+        public static class Announcement {
+
+            @Config.Comment("Enables periodic announcement in chat")
+            @Config.DefaultBoolean(false)
+            public boolean enabled;
+
+            @Config.Comment("How often the announcement should run in minutes")
+            @Config.DefaultDouble(15)
+            public double interval;
+
+            @Config.Comment("Content of the announcement(s)")
+            @Config.DefaultStringList({"§a欢迎来到马玮民喵科技服！\n§a如果游戏体验还可以，请考虑向你的亲朋好友推荐本服务器！"})
+            public String[] announcements;
+        }
+
+        public final Announcement announcement = new Announcement();
         public final Cleanup cleanup = new Cleanup();
     }
 

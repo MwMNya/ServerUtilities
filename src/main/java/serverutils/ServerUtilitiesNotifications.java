@@ -32,8 +32,9 @@ public enum ServerUtilitiesNotifications {
     BACKUP("backup", ACTION_BAR),
     CONFIG_CHANGED("config_changed", ACTION_BAR),
     RESTART_TIMER("restart_timer", ACTION_BAR),
-    CLEANUP("cleanup", ACTION_BAR),
-    PLAYER_AFK("player_afk", CHAT);
+    CLEANUP("cleanup", CHAT),
+    PLAYER_AFK("player_afk", CHAT),
+    ANNOUNCEMENT("announcement",CHAT);
 
     public static final ServerUtilitiesNotifications[] VALUES = values();
 
