@@ -772,9 +772,27 @@ public class ServerUtilitiesConfig {
             @Config.DefaultDouble(15)
             public double interval;
 
-            @Config.Comment("Content of the announcement(s)")
-            @Config.DefaultStringList({"§a欢迎来到马玮民喵科技服！\n§a如果游戏体验还可以，请考虑向你的亲朋好友推荐本服务器！"})
-            public String[] announcements;
+            @Config.Comment("Content of the announcement 1")
+            @Config.DefaultStringList({ "§a欢迎来到马玮民喵科技服！", "§a如果游戏体验还可以，请考虑向你的亲朋好友推荐本服务器！" })
+            public String[] announcement1;
+            @Config.Comment("Content of the announcement 2")
+            @Config.DefaultStringList({})
+            public String[] announcement2;
+            @Config.Comment("Content of the announcement 3")
+            @Config.DefaultStringList({})
+            public String[] announcement3;
+            @Config.Comment("Content of the announcement 4")
+            @Config.DefaultStringList({})
+            public String[] announcement4;
+            @Config.Comment("Content of the announcement 5")
+            @Config.DefaultStringList({})
+            public String[] announcement5;
+            @Config.Comment("Content of the announcement 6")
+            @Config.DefaultStringList({})
+            public String[] announcement6;
+            @Config.Comment("Content of the announcement 7")
+            @Config.DefaultStringList({})
+            public String[] announcement7;
         }
 
         public final Announcement announcement = new Announcement();
