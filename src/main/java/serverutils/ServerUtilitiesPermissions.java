@@ -133,8 +133,10 @@ public class ServerUtilitiesPermissions {
     public static final String CLAIMS_JOURNEYMAP = "serverutilities.journeymap.enable";
     public static final String CLAIMS_JOURNEYMAP_OTHER = "serverutilities.journeymap.other";
 
-    public static final String RTP = "serverutilties.rtp";
-    public static final String END = "serverutilties.end";
+    public static final String RTP = "serverutilities.rtp";
+    public static final String END = "serverutilities.end";
+    public static final String SETWORLDSPAWN = "serverutilities.setworldspawn";
+    public static final String TP2 = "serverutilities.tp2";
 
     static void init() {
         registerPermissions();
@@ -274,7 +276,9 @@ public class ServerUtilitiesPermissions {
                 "Allow player to join while not whitelisted");
 
         PermissionAPI.registerNode(RTP, DefaultPermissionLevel.ALL, "Allow all player to rtp");
-        PermissionAPI.registerNode(END, DefaultPermissionLevel.ALL, "Allow all player to teleport to the end");
+        PermissionAPI.registerNode(SETWORLDSPAWN, DefaultPermissionLevel.OP, "Allow player to set world spawnpoint");
+        PermissionAPI.registerNode(TP2, DefaultPermissionLevel.OP, "Allow player to tp to the others");
+        PermissionAPI.registerNode(END, DefaultPermissionLevel.ALL, "Allow player to tp to the end");
 
         for (Block block : GameData.getBlockRegistry().typeSafeIterable()) {
             String name = formatId(block);

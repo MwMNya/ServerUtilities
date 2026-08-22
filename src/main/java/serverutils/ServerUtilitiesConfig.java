@@ -265,6 +265,9 @@ public class ServerUtilitiesConfig {
         public boolean tpa;
 
         @Config.DefaultBoolean(true)
+        public boolean tp2;
+
+        @Config.DefaultBoolean(true)
         public boolean nick;
 
         @Config.DefaultBoolean(true)

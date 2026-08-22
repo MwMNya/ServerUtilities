@@ -33,22 +33,38 @@ public class AnnouncementTask extends Task {
         announcements.add(tasks.announcement.announcement6);
         announcements.add(tasks.announcement.announcement7);
 
-        String[] announcement = announcements.get(announcementIndex);
+        if (announcements.isEmpty()) {
+            return;
+        }
 
-        if (announcement != null) {
+        for (int i = 0; i < announcements.size(); i++) {
+
+            String[] announcement = announcements.get(announcementIndex);
+
+            announcementIndex++;
+
+            if (announcementIndex >= announcements.size()) {
+                announcementIndex = 0;
+            }
+
+            if (announcement == null || announcement.length == 0) {
+                continue;
+            }
+
+            boolean hasContent = false;
+
             for (String text : announcement) {
                 if (text == null || text.isEmpty()) {
                     continue;
                 }
 
+                hasContent = true;
                 ANNOUNCEMENT.createNotification(text).sendToAll();
             }
-        }
 
-        announcementIndex++;
-
-        if (announcementIndex >= announcements.size()) {
-            announcementIndex = 0;
+            if (hasContent) {
+                return;
+            }
         }
     }
 }

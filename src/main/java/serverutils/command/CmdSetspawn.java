@@ -5,6 +5,7 @@ import static serverutils.ServerUtilitiesConfig.world;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
@@ -27,7 +28,11 @@ public class CmdSetspawn extends CmdBase {
             throw ServerUtilities.error(sender, "serverutilities.lang.warps.cross_dim");
         }
         player.setSpawnChunk(player.getPlayerCoordinates(), true);
-        IChatComponent component = ServerUtilities.lang("serverutilities.lang.setspawn.successfully");
+        ChunkCoordinates cc = player.getPlayerCoordinates();
+        int x = cc.posX;
+        int y = cc.posY;
+        int z = cc.posZ;
+        IChatComponent component = ServerUtilities.lang(sender, "serverutilities.lang.setspawn.successfully", x, y, z);
         component.getChatStyle().setColor(EnumChatFormatting.GREEN);
         sender.addChatMessage(component);
     }

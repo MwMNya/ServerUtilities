@@ -19,6 +19,7 @@ import serverutils.command.tp.CmdHome;
 import serverutils.command.tp.CmdSetHome;
 import serverutils.command.tp.CmdSetWarp;
 import serverutils.command.tp.CmdSpawn;
+import serverutils.command.tp.CmdTP2;
 import serverutils.command.tp.CmdTPA;
 import serverutils.command.tp.CmdTPAccept;
 import serverutils.command.tp.CmdTplast;
@@ -81,6 +82,7 @@ public class ServerUtilitiesCommands {
 
         if (commands.setspawn) {
             event.registerServerCommand(new CmdSetspawn());
+            event.registerServerCommand(new CmdSetWorldSpawn());
         }
 
         if (commands.chunks) {
@@ -122,6 +124,10 @@ public class ServerUtilitiesCommands {
         if (commands.tpa) {
             event.registerServerCommand(new CmdTPA());
             event.registerServerCommand(new CmdTPAccept());
+        }
+
+        if (commands.tp2) {
+            event.registerServerCommand(new CmdTP2());
         }
 
         if (commands.nick) {

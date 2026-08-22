@@ -835,4 +835,8 @@ serverutilities.invsee.tic_bag=TiC Bag & Accessories
 serverutilities.invsee.galacticraft=Galacticraft
 serverutilities.invsee.gc_items=GC Items
 
-serverutilities.lang.setspawn.successfully=Set spawnpoint succeffully.
+serverutilities.lang.setspawn.successfully=Set spawnpoint succeffully at x=%s, y=%s, z=%s.
+serverutilities.lang.setworldspawn.successfully=Successfully set world spawnpoint at x=%s, y=%s, z=%s.
+
+serverutilities.lang.tp2.cant_request=Player offline or doesn't exist.
+serverutilities.lang.tp2.successfully=Teleported to %s.
