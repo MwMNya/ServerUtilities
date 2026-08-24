@@ -207,7 +207,7 @@ public class RTPPreGenManager {
                 pos = findBlockPos(world, 0);
             }
 
-            if (pos.posX == -1 || pos.posY == -1 || pos.posZ == -1) {
+            if (pos.posX == -1 && pos.posY == -1 && pos.posZ == -1) {
 
                 continue;
             }
@@ -401,24 +401,6 @@ public class RTPPreGenManager {
         Block block = world.getBlock(x, y, z);
 
         return block.isAir(world, x, y, z);
-    }
-
-    private boolean isLavaPool(World world, int x, int y, int z) {
-
-        int lavaCount = 0;
-
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-
-                Block block = world.getBlock(x + dx, y, z + dz);
-
-                if (block == Blocks.lava || block == Blocks.flowing_lava) {
-
-                    lavaCount++;
-                }
-            }
-        }
-        return lavaCount >= 3;
     }
 
     private static boolean isNearBedrock(World world, int x, int y, int z) {

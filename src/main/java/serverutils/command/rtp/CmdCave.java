@@ -1,7 +1,5 @@
 package serverutils.command.rtp;
 
-import static serverutils.pregenerator.RTPPreGenManager.findBlockPosUnderground;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -49,16 +47,32 @@ public class CmdCave extends CmdBase {
         TeleporterDimPos tpDimPos = RTPPreGenManager
                 .getRandomPreGenPosition(ServerUtilitiesConfig.dimension.miningDimensionIdUnderground);
 
-        if (tpDimPos != null) {
+        if (tpDimPos == null) {
+            tpDimPos = RTPPreGenManager.findBlockPosUnderground(world, 0);
+
+            if (tpDimPos.posX == -1 && tpDimPos.posY == -1 && tpDimPos.posZ == -1) {
+
+                tpDimPos = RTPPreGenManager.findBlockPosUnderground(world, 0);
+
+            }
+
             data.teleport(tpDimPos, TeleportType.RTP, null);
-            IChatComponent component = ServerUtilities.lang("serverutilities.lang.rtp.successfully");
+
+            IChatComponent component = ServerUtilities.lang("serverutilities.lang.rtp.successfully1");
             component.getChatStyle().setColor(EnumChatFormatting.GREEN);
             sender.addChatMessage(component);
             return;
         }
-        TeleporterDimPos pos = findBlockPosUnderground(world, 0);
-        data.teleport(pos, TeleportType.RTP, null);
-        IChatComponent component = ServerUtilities.lang("serverutilities.lang.rtp.successfully1");
+
+        if (tpDimPos.posX == -1 && tpDimPos.posY == -1 && tpDimPos.posZ == -1) {
+
+            tpDimPos = RTPPreGenManager.findBlockPosUnderground(world, 0);
+
+        }
+
+        data.teleport(tpDimPos, TeleportType.RTP, null);
+
+        IChatComponent component = ServerUtilities.lang("serverutilities.lang.rtp.successfully");
         component.getChatStyle().setColor(EnumChatFormatting.GREEN);
         sender.addChatMessage(component);
     }

@@ -1,7 +1,5 @@
 package serverutils.command.rtp;
 
-import static serverutils.pregenerator.RTPPreGenManager.findNetherBlockPos;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,16 +45,32 @@ public class CmdNether extends CmdBase {
         TeleporterDimPos tpDimPos = RTPPreGenManager
                 .getRandomPreGenPosition(ServerUtilitiesConfig.world.nether_dimension);
 
-        if (tpDimPos != null) {
+        if (tpDimPos == null) {
+            tpDimPos = RTPPreGenManager.findNetherBlockPos(world, 0);
+
+            if (tpDimPos.posX == -1 && tpDimPos.posY == -1 && tpDimPos.posZ == -1) {
+
+                tpDimPos = RTPPreGenManager.findNetherBlockPos(world, 0);
+
+            }
+
             data.teleport(tpDimPos, TeleportType.RTP, null);
-            IChatComponent component = ServerUtilities.lang("serverutilities.lang.rtp.successfully");
+
+            IChatComponent component = ServerUtilities.lang("serverutilities.lang.rtp.successfully1");
             component.getChatStyle().setColor(EnumChatFormatting.GREEN);
             sender.addChatMessage(component);
             return;
         }
-        TeleporterDimPos pos = findNetherBlockPos(world, 0);
-        data.teleport(pos, TeleportType.RTP, null);
-        IChatComponent component = ServerUtilities.lang("serverutilities.lang.rtp.successfully1");
+
+        if (tpDimPos.posX == -1 && tpDimPos.posY == -1 && tpDimPos.posZ == -1) {
+
+            tpDimPos = RTPPreGenManager.findNetherBlockPos(world, 0);
+
+        }
+
+        data.teleport(tpDimPos, TeleportType.RTP, null);
+
+        IChatComponent component = ServerUtilities.lang("serverutilities.lang.rtp.successfully");
         component.getChatStyle().setColor(EnumChatFormatting.GREEN);
         sender.addChatMessage(component);
     }
