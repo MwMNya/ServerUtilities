@@ -88,7 +88,8 @@ public class BackupTask extends Task {
             postBackup(universe);
             return;
         }
-        if (thread != null) return;
+        if (isBackupRunning()) return;
+        if (!dimSaveStates.isEmpty()) postBackup(universe);
         boolean auto = sender == null;
 
         if (auto && !backups.enable_backups) return;
@@ -194,12 +195,21 @@ public class BackupTask extends Task {
         }
     }
 
+    public static boolean isBackupRunning() {
+        return thread != null && thread.isAlive();
+    }
+
+    public static void stopBackupThread() {
+        if (thread != null) thread.interrupt();
+    }
+
     private boolean hasOnlinePlayers(MinecraftServer server) {
         return !server.getConfigurationManager().playerEntityList.isEmpty();
     }
 
     private void postBackup(Universe universe) {
-        if (thread != null && !thread.isDone) {
+        if (dimSaveStates.isEmpty()) return;
+        if (isBackupRunning()) {
             setNextTime(System.currentTimeMillis() + Ticks.SECOND.millis());
             universe.scheduleTask(this);
             return;
@@ -226,5 +236,6 @@ public class BackupTask extends Task {
         } catch (Exception ex) {
             ServerUtilities.LOGGER.info("An error occurred while turning on auto-save.", ex);
         }
+        dimSaveStates.clear();
     }
 }
