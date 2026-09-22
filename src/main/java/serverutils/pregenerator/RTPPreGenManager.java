@@ -15,6 +15,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.ForgeChunkManager;
 
@@ -198,7 +199,9 @@ public class RTPPreGenManager {
         for (int i = 0; i < need; i++) {
 
             TeleporterDimPos pos;
-            if (dimension == ServerUtilitiesConfig.dimension.miningDimensionIdUnderground) {
+            if (dimension == ServerUtilitiesConfig.world.end_dimension) {
+                pos = findBlockPosEnd(world, 0);
+            } else if (dimension == ServerUtilitiesConfig.dimension.miningDimensionIdUnderground) {
                 pos = findBlockPosUnderground(world, 0);
             } else if (dimension == ServerUtilitiesConfig.world.nether_dimension) {
                 pos = findNetherBlockPos(world, 0);
@@ -207,7 +210,7 @@ public class RTPPreGenManager {
                 pos = findBlockPos(world, 0);
             }
 
-            if (pos.posX == -1 && pos.posY == -1 && pos.posZ == -1) {
+            if (isInvalidPosition(pos)) {
 
                 continue;
             }
@@ -222,71 +225,97 @@ public class RTPPreGenManager {
     }
 
     public static TeleporterDimPos findBlockPos(World world, int depth) {
-        if (++depth > ServerUtilitiesConfig.world.rtp_max_tries) {
-            return TeleporterDimPos.of(-1, -1, -1, world.provider.dimensionId);
-        }
-        double dist = ServerUtilitiesConfig.world.rtp_min_distance + world.rand.nextDouble()
-                * (ServerUtilitiesConfig.world.rtp_max_distance - ServerUtilitiesConfig.world.rtp_min_distance);
+        while (++depth <= getMaxAttempts()) {
+            double dist = getRandomRTPDistance(world);
+            double angle = world.rand.nextDouble() * Math.PI * 2D;
+            int x = MathHelper.floor_double(Math.cos(angle) * dist);
+            int z = MathHelper.floor_double(Math.sin(angle) * dist);
 
-        double angle = world.rand.nextDouble() * Math.PI * 2;
+            if (!isInsideWorldBorder(x, z) || isClaimed(world, x, z) || isOceanBiome(world, x, z)) {
+                continue;
+            }
 
-        int x = MathHelper.floor_double(Math.cos(angle) * dist);
-        int z = MathHelper.floor_double(Math.sin(angle) * dist);
-        int y = 256;
+            loadCandidateChunk(world, x, z);
 
-        if (!isInsideWorldBorder(world, x, y, z)) return findBlockPos(world, depth);
-
-        if (ClaimedChunks.instance != null
-                && ClaimedChunks.instance.getChunk(new ChunkDimPos(x >> 4, z >> 4, world.provider.dimensionId))
-                        != null) {
-            return findBlockPos(world, depth);
-        }
-        if (isOceanBiome(world, x, z)) return findBlockPos(world, depth);
-
-        while (y > 0) {
-            y--;
-            Block feet = world.getBlock(x, y, z);
-            Block head = world.getBlock(x, y + 2, z);
-            if (!feet.equals(Blocks.air) && head.equals(Blocks.air) && !UNSAFE_BLOCKS.contains(feet)) {
-                return TeleporterDimPos.of(x + 0.5, y + 2.5, z + 0.5, world.provider.dimensionId);
+            for (int y = 255; y > 0; y--) {
+                if (isSafeSurfacePosition(world, x, y, z)) {
+                    return TeleporterDimPos.of(x + 0.5D, y + 1.0D, z + 0.5D, world.provider.dimensionId);
+                }
             }
         }
-        return findBlockPos(world, depth);
+        return invalidPosition(world);
     }
 
     public static TeleporterDimPos findBlockPosUnderground(World world, int depth) {
-        if (++depth > ServerUtilitiesConfig.world.rtp_max_tries) {
-            return TeleporterDimPos.of(-1, -1, -1, world.provider.dimensionId);
-        }
-        double dist = ServerUtilitiesConfig.world.rtp_min_distance + world.rand.nextDouble()
-                * (ServerUtilitiesConfig.world.rtp_max_distance - ServerUtilitiesConfig.world.rtp_min_distance);
+        while (++depth <= getMaxAttempts()) {
+            double dist = getRandomRTPDistance(world);
+            double angle = world.rand.nextDouble() * Math.PI * 2D;
+            int x = MathHelper.floor_double(Math.cos(angle) * dist);
+            int z = MathHelper.floor_double(Math.sin(angle) * dist);
 
-        double angle = world.rand.nextDouble() * Math.PI * 2;
+            if (!isInsideWorldBorder(x, z) || isClaimed(world, x, z)) {
+                continue;
+            }
 
-        int x = MathHelper.floor_double(Math.cos(angle) * dist);
-        int z = MathHelper.floor_double(Math.sin(angle) * dist);
-        int y = 256;
+            loadCandidateChunk(world, x, z);
 
-        if (!isInsideWorldBorder(world, x, y, z)) return findBlockPosUnderground(world, depth);
-
-        if (ClaimedChunks.instance != null
-                && ClaimedChunks.instance.getChunk(new ChunkDimPos(x >> 4, z >> 4, world.provider.dimensionId)) != null)
-            return findBlockPosUnderground(world, depth);
-
-        while (y > 0) {
-            y--;
-            Block feet = world.getBlock(x, y, z);
-            Block head = world.getBlock(x, y + 2, z);
-            if (!feet.equals(Blocks.air) && head.equals(Blocks.air) && !UNSAFE_BLOCKS.contains(feet)) {
-
-                return TeleporterDimPos.of(x + 0.5, y + 1, z + 0.5, world.provider.dimensionId);
+            for (int y = 255; y > 0; y--) {
+                if (isSafeSurfacePosition(world, x, y, z)) {
+                    return TeleporterDimPos.of(x + 0.5D, y + 1.0D, z + 0.5D, world.provider.dimensionId);
+                }
             }
         }
-        return findBlockPosUnderground(world, depth);
+        return invalidPosition(world);
     }
 
-    private static boolean isInsideWorldBorder(World world, double x, double y, double z) {
+    private static boolean isInsideWorldBorder(double x, double z) {
         return x > -30000000 && x < 30000000 && z > -30000000 && z < 30000000;
+    }
+
+    private static int getMaxAttempts() {
+        return Math.max(0, ServerUtilitiesConfig.world.rtp_max_tries);
+    }
+
+    private static double getRandomRTPDistance(World world) {
+        double configuredMin = ServerUtilitiesConfig.world.rtp_min_distance;
+        double configuredMax = ServerUtilitiesConfig.world.rtp_max_distance;
+        double min = Math.max(0D, Math.min(configuredMin, configuredMax));
+        double max = Math.max(min, Math.max(configuredMin, configuredMax));
+        return min + world.rand.nextDouble() * (max - min);
+    }
+
+    private static boolean isClaimed(World world, int x, int z) {
+        return ClaimedChunks.instance != null
+                && ClaimedChunks.instance.getChunk(new ChunkDimPos(x >> 4, z >> 4, world.provider.dimensionId)) != null;
+    }
+
+    /**
+     * World#getBlock uses ChunkProviderServer#provideChunk internally. On a dedicated/integrated server, provideChunk
+     * is allowed to return the shared EmptyChunk when the requested chunk is not already loaded. RTP searches distant,
+     * normally-unloaded chunks, so every block would otherwise look like air and all attempts would fail. loadChunk
+     * explicitly and synchronously loads or generates the candidate first.
+     */
+    private static void loadCandidateChunk(World world, int blockX, int blockZ) {
+        if (world instanceof WorldServer) {
+            ((WorldServer) world).theChunkProviderServer.loadChunk(blockX >> 4, blockZ >> 4);
+            return;
+        }
+
+        boolean previousFindingSpawnPoint = world.findingSpawnPoint;
+        try {
+            world.findingSpawnPoint = true;
+            world.getChunkFromChunkCoords(blockX >> 4, blockZ >> 4);
+        } finally {
+            world.findingSpawnPoint = previousFindingSpawnPoint;
+        }
+    }
+
+    private static boolean isSafeSurfacePosition(World world, int x, int y, int z) {
+        Block ground = world.getBlock(x, y, z);
+        return !ground.isAir(world, x, y, z) && ground.getMaterial().isSolid()
+                && !UNSAFE_BLOCKS.contains(ground)
+                && isAir(world, x, y + 1, z)
+                && isAir(world, x, y + 2, z);
     }
 
     private static boolean isOceanBiome(World world, int x, int z) {
@@ -295,41 +324,25 @@ public class RTPPreGenManager {
     }
 
     public static TeleporterDimPos findNetherBlockPos(World world, int depth) {
-        if (++depth > ServerUtilitiesConfig.world.rtp_max_tries) {
-            return TeleporterDimPos.of(-1, -1, -1, world.provider.dimensionId);
-        }
+        while (++depth <= getMaxAttempts()) {
+            double dist = getRandomRTPDistance(world);
+            double angle = world.rand.nextDouble() * Math.PI * 2D;
+            int x = MathHelper.floor_double(Math.cos(angle) * dist);
+            int z = MathHelper.floor_double(Math.sin(angle) * dist);
 
-        double dist = ServerUtilitiesConfig.world.rtp_min_distance + world.rand.nextDouble()
-                * (ServerUtilitiesConfig.world.rtp_max_distance - ServerUtilitiesConfig.world.rtp_min_distance);
+            if (!isInsideWorldBorder(x, z) || isClaimed(world, x, z)) {
+                continue;
+            }
 
-        double angle = world.rand.nextDouble() * Math.PI * 2D;
+            loadCandidateChunk(world, x, z);
 
-        int x = MathHelper.floor_double(Math.cos(angle) * dist);
-        int z = MathHelper.floor_double(Math.sin(angle) * dist);
-
-        int maxY = 120;
-        int minY = 5;
-
-        if (!isInsideWorldBorder(world, x, 64, z)) {
-            return findNetherBlockPos(world, depth);
-        }
-
-        if (ClaimedChunks.instance != null
-                && ClaimedChunks.instance.getChunk(new ChunkDimPos(x >> 4, z >> 4, world.provider.dimensionId))
-                        != null) {
-
-            return findNetherBlockPos(world, depth);
-        }
-
-        for (int y = maxY; y >= minY; y--) {
-
-            if (isSafeNetherPosition(world, x, y, z)) {
-
-                return TeleporterDimPos.of(x + 0.5D, y + 1.0D, z + 0.5D, world.provider.dimensionId);
+            for (int y = 120; y >= 5; y--) {
+                if (isSafeNetherPosition(world, x, y, z)) {
+                    return TeleporterDimPos.of(x + 0.5D, y + 1.0D, z + 0.5D, world.provider.dimensionId);
+                }
             }
         }
-
-        return findNetherBlockPos(world, depth);
+        return invalidPosition(world);
     }
 
     private static boolean isSafeNetherPosition(World world, int x, int y, int z) {
@@ -417,5 +430,45 @@ public class RTPPreGenManager {
         }
 
         return bedrockCount >= 2;
+    }
+
+    public static TeleporterDimPos findBlockPosEnd(World world, int depth) {
+        while (++depth <= getMaxAttempts()) {
+            double radius = Math.max(1D, ServerUtilitiesConfig.rtp.endMainIslandRadius);
+            double dist = Math.sqrt(world.rand.nextDouble()) * radius;
+            double angle = world.rand.nextDouble() * Math.PI * 2D;
+            int x = MathHelper.floor_double(Math.cos(angle) * dist);
+            int z = MathHelper.floor_double(Math.sin(angle) * dist);
+
+            if (isClaimed(world, x, z)) {
+                continue;
+            }
+
+            loadCandidateChunk(world, x, z);
+
+            for (int y = 255; y >= 4; y--) {
+                if (isSafeEndPosition(world, x, y, z)) {
+                    return TeleporterDimPos.of(x + 0.5, y + 1, z + 0.5, world.provider.dimensionId);
+                }
+            }
+        }
+        return invalidPosition(world);
+    }
+
+    private static boolean isSafeEndPosition(World world, int x, int y, int z) {
+        return world.getBlock(x, y, z) == Blocks.end_stone && world.getBlock(x, y - 1, z) == Blocks.end_stone
+                && world.getBlock(x, y - 2, z) == Blocks.end_stone
+                && world.getBlock(x, y - 3, z) == Blocks.end_stone
+                && world.getBlock(x, y - 4, z) == Blocks.end_stone
+                && isAir(world, x, y + 1, z)
+                && isAir(world, x, y + 2, z);
+    }
+
+    private static TeleporterDimPos invalidPosition(World world) {
+        return TeleporterDimPos.of(-1D, -1D, -1D, world.provider.dimensionId);
+    }
+
+    public static boolean isInvalidPosition(TeleporterDimPos pos) {
+        return pos == null || (pos.posX == -1 && pos.posY == -1 && pos.posZ == -1);
     }
 }

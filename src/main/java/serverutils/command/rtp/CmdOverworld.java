@@ -45,33 +45,21 @@ public class CmdOverworld extends CmdBase {
 
         TeleporterDimPos tpDimPos = RTPPreGenManager
                 .getRandomPreGenPosition(ServerUtilitiesConfig.world.spawn_dimension);
+        boolean usedPreGeneratedPosition = !RTPPreGenManager.isInvalidPosition(tpDimPos);
 
-        if (tpDimPos == null) {
+        if (!usedPreGeneratedPosition) {
             tpDimPos = RTPPreGenManager.findBlockPos(world, 0);
-
-            if (tpDimPos.posX == -1 && tpDimPos.posY == -1 && tpDimPos.posZ == -1) {
-
-                tpDimPos = RTPPreGenManager.findBlockPos(world, 0);
-
-            }
-
-            data.teleport(tpDimPos, TeleportType.RTP, null);
-
-            IChatComponent component = ServerUtilities.lang("serverutilities.lang.rtp.successfully1");
-            component.getChatStyle().setColor(EnumChatFormatting.GREEN);
-            sender.addChatMessage(component);
-            return;
         }
 
-        if (tpDimPos.posX == -1 && tpDimPos.posY == -1 && tpDimPos.posZ == -1) {
-
-            tpDimPos = RTPPreGenManager.findBlockPos(world, 0);
-
+        if (RTPPreGenManager.isInvalidPosition(tpDimPos)) {
+            throw ServerUtilities.error(sender, "serverutilities.lang.rtp.fail");
         }
 
         data.teleport(tpDimPos, TeleportType.RTP, null);
 
-        IChatComponent component = ServerUtilities.lang("serverutilities.lang.rtp.successfully");
+        IChatComponent component = ServerUtilities.lang(
+                usedPreGeneratedPosition ? "serverutilities.lang.rtp.successfully"
+                        : "serverutilities.lang.rtp.successfully1");
         component.getChatStyle().setColor(EnumChatFormatting.GREEN);
         sender.addChatMessage(component);
     }

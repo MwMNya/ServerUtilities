@@ -901,7 +901,7 @@ public class ServerUtilitiesConfig {
     public static class Dimension {
 
         @Config.Comment("Whether enable mining dimension that MwMNya added.")
-        @Config.DefaultBoolean(false)
+        @Config.DefaultBoolean(true)
         public boolean enableMiningDimension;
 
         @Config.Comment("The dimension ID of the mining dimension. Make sure it doesn't conflict with other dimensions.")
@@ -942,5 +942,9 @@ public class ServerUtilitiesConfig {
         @Config.Comment("Dimension ID of Twilight Forest, needed by RTP.")
         @Config.DefaultInt(7)
         public int twilightForestDimensionID;
+
+        @Config.Comment("Radius in blocks used to find a safe RTP position on the End main island.")
+        @Config.DefaultInt(300)
+        public int endMainIslandRadius;
     }
 }

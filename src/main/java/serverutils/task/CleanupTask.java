@@ -9,6 +9,8 @@ import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.INpc;
+import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.IMob;
@@ -122,6 +124,11 @@ public class CleanupTask extends Task {
 
     private static boolean shouldDespawn(Entity entity) {
         ServerUtilitiesConfig.Tasks.Cleanup config = tasks.cleanup;
+
+        if (entity instanceof EntityDragon || entity instanceof EntityWither) {
+            return false;
+        }
+
         if (entity instanceof EntityLiving living && living.isNoDespawnRequired()) {
             return false;
         }

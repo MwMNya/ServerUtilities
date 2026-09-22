@@ -840,3 +840,6 @@ serverutilities.lang.setworldspawn.successfully=Successfully set world spawnpoin
 
 serverutilities.lang.tp2.cant_request=Player offline or doesn't exist.
 serverutilities.lang.tp2.successfully=Teleported to %s.
+
+serverutilities.lang.end.successfully1=Teleported to the End!
+serverutilities.lang.end.successfully=Teleported to the End!.
