@@ -55,6 +55,7 @@ import serverutils.ranks.ServerUtilitiesPermissionHandler;
 import serverutils.task.AnnouncementTask;
 import serverutils.task.CleanupTask;
 import serverutils.task.DecayTask;
+import serverutils.task.ResourceWorldCleanupTask;
 import serverutils.task.ShutdownTask;
 import serverutils.task.backup.BackupTask;
 
@@ -195,6 +196,7 @@ public class ServerUtilitiesCommon {
         Universe universe = Universe.get();
         universe.scheduleTask(new DecayTask(), world.chunk_claiming);
         universe.scheduleTask(new CleanupTask(), tasks.cleanup.enabled);
+        universe.scheduleTask(new ResourceWorldCleanupTask(), tasks.resource_world_cleanup.enabled);
         universe.scheduleTask(new BackupTask(), backups.enable_backups);
         universe.scheduleTask(new AnnouncementTask(), tasks.announcement.enabled);
         if (auto_shutdown.enabled && auto_shutdown.times.length > 0

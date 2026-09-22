@@ -798,8 +798,29 @@ public class ServerUtilitiesConfig {
             public String[] announcement7;
         }
 
+        public static class ResourceWorldCleanup {
+
+            @Config.Comment("Periodically reset all chunks in both configured resource-world dimensions")
+            @Config.DefaultBoolean(false)
+            @Config.LangKey("serverutilities.config.enabled")
+            public boolean enabled;
+
+            @Config.Comment("How often resource-world chunks should be reset, in hours")
+            @Config.DefaultDouble(168)
+            public double interval_hours;
+
+            @Config.Comment("Dimension IDs whose chunks should be periodically reset")
+            @Config.DefaultIntList({ 1145, 1146 })
+            public int[] dimension_ids;
+
+            @Config.Comment("Send countdown and completion messages for resource-world resets")
+            @Config.DefaultBoolean(true)
+            public boolean notifications;
+        }
+
         public final Announcement announcement = new Announcement();
         public final Cleanup cleanup = new Cleanup();
+        public final ResourceWorldCleanup resource_world_cleanup = new ResourceWorldCleanup();
     }
 
     public static class Pregen {

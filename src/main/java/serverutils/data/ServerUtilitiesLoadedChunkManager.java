@@ -3,6 +3,7 @@ package serverutils.data;
 import static serverutils.ServerUtilitiesPermissions.CHUNKLOADER_LOAD_OFFLINE;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -33,6 +34,34 @@ public class ServerUtilitiesLoadedChunkManager implements ForgeChunkManager.Load
     public void clear() {
         ticketMap.clear();
         chunkTickets.clear();
+    }
+
+    /** Releases this mod's tickets before a resource dimension is unloaded and reset. */
+    public void releaseDimension(int dimension) {
+        Iterator<Map.Entry<TicketKey, ForgeChunkManager.Ticket>> tickets = ticketMap.entrySet().iterator();
+        while (tickets.hasNext()) {
+            Map.Entry<TicketKey, ForgeChunkManager.Ticket> entry = tickets.next();
+            if (entry.getKey().dimension == dimension) {
+                ForgeChunkManager.releaseTicket(entry.getValue());
+                tickets.remove();
+            }
+        }
+
+        Iterator<ChunkDimPos> chunks = chunkTickets.keySet().iterator();
+        while (chunks.hasNext()) {
+            if (chunks.next().dim == dimension) {
+                chunks.remove();
+            }
+        }
+
+        if (ClaimedChunks.instance != null) {
+            for (ClaimedChunk chunk : ClaimedChunks.instance.getAllChunks()) {
+                if (chunk.getPos().dim == dimension) {
+                    chunk.setLoaded(false);
+                    chunk.forced = false;
+                }
+            }
+        }
     }
 
     @Override

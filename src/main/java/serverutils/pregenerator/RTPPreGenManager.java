@@ -92,6 +92,13 @@ public class RTPPreGenManager {
         ForgeChunkManager.unforceChunk(requestTicket(dimension), new ChunkCoordIntPair(0, 0));
     }
 
+    public static void clearDimensionState(int dimension) {
+        tasks.remove(dimension);
+        preGenPositions.remove(dimension);
+        dimKeys.remove(dimension);
+        dimTickets.remove(dimension);
+    }
+
     @SubscribeEvent
     public static void serverTick(TickEvent.ServerTickEvent event) {
 

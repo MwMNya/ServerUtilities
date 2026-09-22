@@ -33,6 +33,7 @@ public enum ServerUtilitiesNotifications {
     CONFIG_CHANGED("config_changed", ACTION_BAR),
     RESTART_TIMER("restart_timer", ACTION_BAR),
     CLEANUP("cleanup", CHAT),
+    RESOURCE_WORLD_CLEANUP("resource_world_cleanup", CHAT),
     PLAYER_AFK("player_afk", CHAT),
     ANNOUNCEMENT("announcement", CHAT);
 

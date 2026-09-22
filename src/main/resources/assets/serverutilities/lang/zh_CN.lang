@@ -57,6 +57,17 @@ serverutilities.task.cleanup_passives=被动生物
 serverutilities.task.cleanup_items=掉落物品
 serverutilities.task.cleanup_experience=经验球
 serverutilities.task.cleanup_removed=从世界中删除了 %s 个实体
+serverutilities.task.resource_world_cleanup_warning=资源世界区块将在 %s 秒后清空，身处其中的玩家会被传送回出生点。
+serverutilities.task.resource_world_cleanup_complete=资源世界区块已清空。
+serverutilities.task.resource_world_cleanup_failed=资源世界区块清理失败：%s
+
+serverutilities.tasks.resource_world_cleanup=资源世界清理
+serverutilities.tasks.resource_world_cleanup.interval_hours=间隔（小时）
+serverutilities.tasks.resource_world_cleanup.dimension_ids=需要清空区块的维度 ID
+serverutilities.tasks.resource_world_cleanup.notifications=通知
+
+serverutilities.notifications.resource_world_cleanup=资源世界清理
+serverutilities.notifications.resource_world_cleanup.desc=在资源世界区块即将清空或清空完成时通知
 
 serverutilities.lang.reload_server_button=重新加载服务器
 serverutilities.lang.reload_server=服务器在 %s 内重新加载完成
