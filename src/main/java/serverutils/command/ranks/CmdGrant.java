@@ -57,7 +57,10 @@ public class CmdGrant extends CmdBase {
 
         long now = System.currentTimeMillis();
         ZoneId zone = ZoneId.systemDefault();
-        TemporaryGrantTime.Range range = TemporaryGrantTime.parse(args[2], now, zone);
+        Rank.TemporaryParent existingGrant = target.temporaryParents.get(parent.getId());
+        TemporaryGrantTime.Range existingRange = existingGrant == null ? null
+                : new TemporaryGrantTime.Range(existingGrant.validFrom, existingGrant.validUntil);
+        TemporaryGrantTime.Range range = TemporaryGrantTime.parseForGrant(args[2], now, zone, existingRange);
         if (range == null) throw ServerUtilities.error(sender, "commands.ranks.grant.invalid_time", args[2]);
 
         if (!target.addTemporaryParent(parent, range.validFrom(), range.validUntil())) {

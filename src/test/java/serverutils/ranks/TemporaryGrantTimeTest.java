@@ -58,4 +58,57 @@ public class TemporaryGrantTimeTest {
         assertNull(TemporaryGrantTime.parse("2026-10-01..2026-09-01", now, ZONE));
         assertNull(TemporaryGrantTime.parse("2025-09-01..2025-10-01", now, ZONE));
     }
+
+    @Test
+    public void repeatedDurationAddsToUnexpiredGrant() {
+        long now = LocalDateTime.of(2026, 9, 24, 12, 0).atZone(ZONE).toInstant().toEpochMilli();
+        TemporaryGrantTime.Range existing = new TemporaryGrantTime.Range(now - 5_000L, now + 7_000L);
+
+        TemporaryGrantTime.Range range = TemporaryGrantTime.parseForGrant("10s", now, ZONE, existing);
+
+        assertNotNull(range);
+        assertEquals(existing.validFrom(), range.validFrom());
+        assertEquals(existing.validUntil() + 10_000L, range.validUntil());
+    }
+
+    @Test
+    public void repeatedMonthAddsCalendarMonthToExistingEnd() {
+        long now = LocalDateTime.of(2026, 9, 24, 12, 0).atZone(ZONE).toInstant().toEpochMilli();
+        long existingStart = LocalDateTime.of(2026, 9, 1, 8, 30).atZone(ZONE).toInstant().toEpochMilli();
+        long existingEnd = LocalDateTime.of(2026, 10, 10, 8, 30).atZone(ZONE).toInstant().toEpochMilli();
+        TemporaryGrantTime.Range existing = new TemporaryGrantTime.Range(existingStart, existingEnd);
+
+        TemporaryGrantTime.Range range = TemporaryGrantTime.parseForGrant("month", now, ZONE, existing);
+
+        assertNotNull(range);
+        assertEquals(existingStart, range.validFrom());
+        assertEquals(
+                LocalDateTime.of(2026, 11, 10, 8, 30).atZone(ZONE).toInstant().toEpochMilli(),
+                range.validUntil());
+    }
+
+    @Test
+    public void expiredGrantRestartsRelativeDurationFromNow() {
+        long now = LocalDateTime.of(2026, 9, 24, 12, 0).atZone(ZONE).toInstant().toEpochMilli();
+        TemporaryGrantTime.Range expired = new TemporaryGrantTime.Range(now - 20_000L, now - 10_000L);
+
+        TemporaryGrantTime.Range range = TemporaryGrantTime.parseForGrant("10s", now, ZONE, expired);
+
+        assertNotNull(range);
+        assertEquals(now, range.validFrom());
+        assertEquals(now + 10_000L, range.validUntil());
+    }
+
+    @Test
+    public void explicitRangeStillReplacesExistingGrant() {
+        long now = LocalDateTime.of(2026, 9, 24, 12, 0).atZone(ZONE).toInstant().toEpochMilli();
+        TemporaryGrantTime.Range existing = new TemporaryGrantTime.Range(now - 1_000L, now + 60_000L);
+
+        TemporaryGrantTime.Range range = TemporaryGrantTime
+                .parseForGrant("2026-10-01..2026-11-01", now, ZONE, existing);
+
+        assertNotNull(range);
+        assertEquals(LocalDateTime.of(2026, 10, 1, 0, 0).atZone(ZONE).toInstant().toEpochMilli(), range.validFrom());
+        assertEquals(LocalDateTime.of(2026, 11, 1, 0, 0).atZone(ZONE).toInstant().toEpochMilli(), range.validUntil());
+    }
 }

@@ -85,6 +85,26 @@ public final class TemporaryGrantTime {
         }
     }
 
+    /**
+     * Parses a grant while preserving any unexpired time already owned by the target.
+     * Relative grants are appended to the existing end time; explicit date ranges remain absolute.
+     */
+    @Nullable
+    public static Range parseForGrant(String input, long now, ZoneId zone, @Nullable Range existing) {
+        String value = input.trim().toLowerCase(Locale.ROOT);
+
+        if (existing != null && existing.validUntil() > now && isRelative(value)) {
+            Range extension = parse(value, existing.validUntil(), zone);
+            return extension == null ? null : new Range(existing.validFrom(), extension.validUntil());
+        }
+
+        return parse(value, now, zone);
+    }
+
+    private static boolean isRelative(String value) {
+        return value.equals("month") || DURATION.matcher(value).matches();
+    }
+
     public static String format(long timestamp, ZoneId zone) {
         return DISPLAY.format(Instant.ofEpochMilli(timestamp).atZone(zone));
     }
