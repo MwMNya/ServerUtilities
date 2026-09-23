@@ -1,18 +1,19 @@
 package serverutils.mixins.late.thaumcraft;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
 import serverutils.ServerUtilitiesConfig;
-import thaumcraft.common.lib.world.ThaumcraftWorldGenerator;
 
 /**
  * Thaumcraft only generates mounds, hilltop stones and eldritch obelisks when the dimension ID is exactly zero. The
  * surface resource world uses the vanilla surface generator, so it should receive the same structures.
  */
-@Mixin(value = ThaumcraftWorldGenerator.class, remap = false)
+@Pseudo
+@Mixin(targets = "thaumcraft.common.lib.world.ThaumcraftWorldGenerator", remap = false)
 public class MixinThaumcraftWorldGenerator {
 
     @ModifyExpressionValue(
