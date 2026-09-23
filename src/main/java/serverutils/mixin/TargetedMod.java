@@ -9,6 +9,7 @@ public enum TargetedMod implements ITargetMod {
 
     ULTRAMINE(null, null, "org.ultramine.server.UltraminePlugin"),
     RANDOMTHINGS("RandomThings"),
+    THAUMCRAFT("Thaumcraft"),
     WITCHERY(null, "witchery", "com.emoniph.witchery.Witchery");
 
     private final TargetModBuilder builder;

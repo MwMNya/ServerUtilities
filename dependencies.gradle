@@ -18,6 +18,7 @@ dependencies {
     compileOnly(rfg.deobf("curse.maven:witchery-69673:2234410")) {transitive = false}
 
     compileOnly files("libs/industrialcraft-2-2.2.828-experimental.jar")
+    compileOnly files("libs/Thaumcraft-1.7.10-4.2.3.5a.jar")
 
     testImplementation('junit:junit:4.13.2')
     testImplementation('org.mockito:mockito-core:4.11.0')

@@ -68,6 +68,12 @@ public enum Mixins implements IMixins {
             .setApplyIf(() -> world.enable_player_sleeping_percentage)
             .addRequiredMod(TargetedMod.WITCHERY)
             .addServerMixins("witchery.MixinWitchery_CancelWakeUpEvents")),
+    GENERATE_THAUMCRAFT_STRUCTURES_IN_RESOURCE_WORLD(new MixinBuilder(
+            "Allow Thaumcraft structures to generate in the surface resource world")
+            .setPhase(Phase.LATE)
+            .setApplyIf(() -> dimension.enableMiningDimension)
+            .addRequiredMod(TargetedMod.THAUMCRAFT)
+            .addCommonMixins("thaumcraft.MixinThaumcraftWorldGenerator")),
     DISABLE_ENDERMEN_GRIEFING(new MixinBuilder("Disable Endermen Griefing in Claimed Chunks")
             .setPhase(Phase.EARLY)
             .setApplyIf(() -> mixins.endermen)

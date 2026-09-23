@@ -55,11 +55,14 @@ public class BackupTaskTest {
         ServerUtilitiesConfig.backups.only_backup_claimed_chunks = false;
         ServerUtilitiesConfig.backups.silent_backup = true;
         ServerUtilitiesConfig.backups.use_separate_thread = true;
+        // A previous interrupted Windows ACL test may leave this directory with inheritance disabled.
+        FileUtils.delete(BackupTask.BACKUP_TEMP_FOLDER);
     }
 
     @AfterClass
     public static void removeTestBackups() {
         FileUtils.delete(BackupTask.BACKUP_FOLDER);
+        FileUtils.delete(BackupTask.BACKUP_TEMP_FOLDER);
     }
 
     @After
@@ -307,7 +310,11 @@ public class BackupTaskTest {
         when(world.getChunkSaveLocation()).thenReturn(source);
         MinecraftServer server = mock(MinecraftServer.class);
         server.worldServers = new WorldServer[] { world };
-        when(server.getConfigurationManager()).thenReturn(mock(ServerConfigurationManager.class));
+        ServerConfigurationManager manager = mock(ServerConfigurationManager.class);
+        Field players = ServerConfigurationManager.class.getDeclaredField("playerEntityList");
+        players.setAccessible(true);
+        players.set(manager, Collections.emptyList());
+        when(server.getConfigurationManager()).thenReturn(manager);
         ISaveFormat saveFormat = mock(ISaveFormat.class);
         SaveHandler saveHandler = mock(SaveHandler.class);
         when(server.getActiveAnvilConverter()).thenReturn(saveFormat);
@@ -621,6 +628,9 @@ public class BackupTaskTest {
 
         MinecraftServer server = mock(MinecraftServer.class);
         ServerConfigurationManager players = mock(ServerConfigurationManager.class);
+        Field playerList = ServerConfigurationManager.class.getDeclaredField("playerEntityList");
+        playerList.setAccessible(true);
+        playerList.set(players, Collections.emptyList());
         when(server.getConfigurationManager()).thenReturn(players);
         server.worldServers = new WorldServer[] { world };
 
@@ -824,6 +834,8 @@ public class BackupTaskTest {
             if (view != null) view.setAcl(original);
             Files.deleteIfExists(keep.toPath());
             ThreadBackup.deleteSnapshot();
+            // AclFileAttributeView#setAcl restores entries but leaves Windows inheritance disabled.
+            FileUtils.delete(BackupTask.BACKUP_TEMP_FOLDER);
         }
     }
 
