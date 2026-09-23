@@ -25,6 +25,9 @@ public enum Mixins implements IMixins {
             .setPhase(Phase.EARLY)
             .setApplyIf(() -> !mixins.modernTabOverlay)
             .addClientMixins("forge.MixinGuiIngameForge")),
+    READABLE_SCOREBOARD_TEXT(new MixinBuilder("Make the vanilla sidebar scoreboard text fully opaque")
+            .setPhase(Phase.EARLY)
+            .addClientMixins("minecraft.MixinGuiIngame_ScoreboardTextColor")),
     VANILLA_TP_BACK_COMPAT(new MixinBuilder("/back compat for the vanilla /tp")
             .setPhase(Phase.EARLY)
             .setApplyIf(() -> commands.back)
