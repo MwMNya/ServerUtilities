@@ -30,6 +30,7 @@ public class Rank extends FinalIDObject implements Comparable<Rank> {
     public static final String NODE_DEFAULT_OP = "default_op_rank";
     public static final String NODE_PRIORITY = "priority";
     public static final String NODE_COMMAND = "command";
+    public static final String NODE_TEMPORARY_PARENT_PREFIX = "temporary_parent.";
 
     @Deprecated
     public static final String NODE_POWER = "power";
@@ -55,11 +56,29 @@ public class Rank extends FinalIDObject implements Comparable<Rank> {
         }
     }
 
+    public static class TemporaryParent {
+
+        public final String rankId;
+        public final long validFrom;
+        public final long validUntil;
+
+        public TemporaryParent(String rankId, long validFrom, long validUntil) {
+            this.rankId = rankId;
+            this.validFrom = validFrom;
+            this.validUntil = validUntil;
+        }
+
+        public boolean isActive(long now) {
+            return now >= validFrom && now < validUntil;
+        }
+    }
+
     public final Ranks ranks;
     private int priority;
     protected IChatComponent displayName;
     protected Set<Rank> parents;
     public final Map<String, Entry> permissions;
+    public final Map<String, TemporaryParent> temporaryParents;
     public String comment;
 
     public Rank(Ranks r, String id) {
@@ -68,6 +87,7 @@ public class Rank extends FinalIDObject implements Comparable<Rank> {
         displayName.getChatStyle().setColor(EnumChatFormatting.DARK_GREEN);
         ranks = r;
         permissions = new LinkedHashMap<>();
+        temporaryParents = new LinkedHashMap<>();
         comment = "";
         priority = -1;
     }
@@ -119,7 +139,17 @@ public class Rank extends FinalIDObject implements Comparable<Rank> {
     }
 
     public Set<Rank> getActualParents() {
-        return getParents();
+        List<Rank> list = new ArrayList<>(getParents());
+        long now = System.currentTimeMillis();
+
+        for (TemporaryParent grant : temporaryParents.values()) {
+            if (!grant.isActive(now)) continue;
+            Rank rank = ranks.getRank(grant.rankId);
+            if (rank != null && !rank.isPlayer() && !list.contains(rank)) list.add(rank);
+        }
+
+        list.sort(null);
+        return new LinkedHashSet<>(list);
     }
 
     public boolean addParent(@Nullable Rank rank) {
@@ -129,31 +159,49 @@ public class Rank extends FinalIDObject implements Comparable<Rank> {
 
         parents = getParents();
 
+        boolean removedTemporary = temporaryParents.remove(rank.getId()) != null;
+
         if (parents.add(rank)) {
             setPermission(NODE_PARENT, StringJoiner.with(", ").join(parents));
             parents = null;
             return true;
         }
 
-        return false;
+        return removedTemporary;
+    }
+
+    public boolean addTemporaryParent(@Nullable Rank rank, long validFrom, long validUntil) {
+        if (rank == null || rank.isPlayer() || validFrom >= validUntil || getParents().contains(rank)) return false;
+        TemporaryParent previous = temporaryParents
+                .put(rank.getId(), new TemporaryParent(rank.getId(), validFrom, validUntil));
+        return previous == null || previous.validFrom != validFrom || previous.validUntil != validUntil;
+    }
+
+    public void loadTemporaryParent(String rankId, long validFrom, long validUntil) {
+        if (Ranks.isValidName(rankId) && validFrom < validUntil && validUntil > System.currentTimeMillis()) {
+            temporaryParents.put(rankId, new TemporaryParent(rankId, validFrom, validUntil));
+        }
     }
 
     public boolean removeParent(Rank rank) {
         parents = getParents();
+        boolean changed = temporaryParents.remove(rank.getId()) != null;
 
         if (parents.remove(rank)) {
             setPermission(NODE_PARENT, StringJoiner.with(", ").join(parents));
             parents = null;
-            return true;
+            changed = true;
         }
 
-        return false;
+        return changed;
     }
 
     public boolean clearParents() {
         priority = -1;
         parents = null;
-        return setPermission(NODE_PARENT, "") != null;
+        boolean changed = !temporaryParents.isEmpty();
+        temporaryParents.clear();
+        return setPermission(NODE_PARENT, "") != null || changed;
     }
 
     @Nullable

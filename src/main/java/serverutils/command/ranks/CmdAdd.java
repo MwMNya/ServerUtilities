@@ -53,6 +53,7 @@ public class CmdAdd extends CmdBase {
         Rank parent = Ranks.INSTANCE.getRank(sender, args[1]);
 
         if (rank.addParent(parent)) {
+            rank.ranks.temporaryGrantsChanged();
             rank.ranks.save();
             sender.addChatMessage(
                     ServerUtilities

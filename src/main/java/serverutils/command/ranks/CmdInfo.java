@@ -1,5 +1,6 @@
 package serverutils.command.ranks;
 
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -17,6 +18,7 @@ import serverutils.lib.command.CmdBase;
 import serverutils.lib.util.StringUtils;
 import serverutils.ranks.Rank;
 import serverutils.ranks.Ranks;
+import serverutils.ranks.TemporaryGrantTime;
 
 public class CmdInfo extends CmdBase {
 
@@ -85,6 +87,29 @@ public class CmdInfo extends CmdBase {
                 t.appendSibling(t1);
             }
 
+            sender.addChatMessage(t);
+        }
+
+        long now = System.currentTimeMillis();
+        ZoneId zone = ZoneId.systemDefault();
+        for (Rank.TemporaryParent grant : rank.temporaryParents.values()) {
+            if (grant.validUntil <= now) continue;
+            IChatComponent t = new ChatComponentText("");
+            t.appendSibling(
+                    StringUtils.color(
+                            new ChatComponentText(Rank.NODE_TEMPORARY_PARENT_PREFIX + grant.rankId),
+                            EnumChatFormatting.GOLD));
+            t.appendText(": ");
+            t.appendSibling(
+                    StringUtils.color(
+                            new ChatComponentText(
+                                    TemporaryGrantTime.format(grant.validFrom, zone) + " -> "
+                                            + TemporaryGrantTime.format(grant.validUntil, zone)),
+                            grant.isActive(now) ? EnumChatFormatting.GREEN : EnumChatFormatting.AQUA));
+            t.getChatStyle().setChatClickEvent(
+                    new ClickEvent(
+                            ClickEvent.Action.SUGGEST_COMMAND,
+                            "/ranks remove " + rank.getId() + " " + grant.rankId));
             sender.addChatMessage(t);
         }
 

@@ -1,9 +1,7 @@
 package serverutils.ranks;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -73,36 +71,30 @@ public class PlayerRank extends Rank {
 
     @Override
     public Set<Rank> getActualParents() {
-        List<Rank> list = new ArrayList<>();
-
-        for (String s : getLocalPermission(NODE_PARENT).split(",")) {
-            Rank r = ranks.getRank(s.trim());
-
-            if (r != null && !r.isPlayer()) {
-                list.add(r);
-            }
-        }
+        Set<Rank> parents = new LinkedHashSet<>(super.getActualParents());
 
         if (ServerUtils.isOP(ranks.universe.server, profile)) {
             Rank r = ranks.getDefaultOPRank();
 
             if (r != null) {
-                list.add(r);
+                parents.add(r);
             }
         }
 
         Rank r = ranks.getDefaultPlayerRank();
 
         if (r != null) {
-            list.add(r);
+            parents.add(r);
         }
 
+        java.util.List<Rank> list = new java.util.ArrayList<>(parents);
         list.sort(null);
         return new LinkedHashSet<>(list);
     }
 
     @Override
     public String getPermission(String originalNode, String node, boolean recursive) {
+        ranks.refreshTemporaryGrants();
         String s = stringCache.get(node);
 
         if (s != null) {
@@ -116,6 +108,7 @@ public class PlayerRank extends Rank {
 
     @Override
     public ConfigValue getPermissionValue(String originalNode, String node, boolean recursive) {
+        ranks.refreshTemporaryGrants();
         ConfigValue v = valueCache.get(node);
 
         if (v == null) {

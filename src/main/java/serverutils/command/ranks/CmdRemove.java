@@ -53,6 +53,7 @@ public class CmdRemove extends CmdBase {
 
         if (args.length == 1) {
             if (rank.clearParents()) {
+                rank.ranks.temporaryGrantsChanged();
                 rank.ranks.save();
                 sender.addChatMessage(
                         ServerUtilities.lang(sender, "commands.ranks.remove.text", "*", rank.getDisplayName()));
@@ -61,6 +62,7 @@ public class CmdRemove extends CmdBase {
             Rank parent = Ranks.INSTANCE.getRank(sender, args[1]);
 
             if (rank.removeParent(parent)) {
+                rank.ranks.temporaryGrantsChanged();
                 rank.ranks.save();
                 sender.addChatMessage(
                         ServerUtilities.lang(

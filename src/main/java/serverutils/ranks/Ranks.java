@@ -64,6 +64,7 @@ public class Ranks {
     public final Map<UUID, PlayerRank> playerRanks;
     private Optional<Rank> defaultPlayerRank, defaultOPRank;
     private File ranksFile, playersFile;
+    private long nextTemporaryBoundary;
 
     public Ranks(Universe u) {
         universe = u;
@@ -75,6 +76,7 @@ public class Ranks {
         defaultOPRank = null;
         ranksFile = null;
         playersFile = null;
+        nextTemporaryBoundary = 0L;
     }
 
     public boolean reload() {
@@ -224,7 +226,14 @@ public class Ranks {
                     }
 
                     if (!value.isEmpty()) {
-                        Rank.Entry entry = currentRank.setPermission(s1[0].trim(), value);
+                        String node = s1[0].trim();
+                        if (node.startsWith(Rank.NODE_TEMPORARY_PARENT_PREFIX)) {
+                            if (!loadTemporaryParent(currentRank, node, value)) save = true;
+                            lastComment = "";
+                            continue;
+                        }
+
+                        Rank.Entry entry = currentRank.setPermission(node, value);
 
                         if (entry != null) {
                             entry.comment = lastComment;
@@ -307,7 +316,14 @@ public class Ranks {
                     String value = s1[1].trim();
 
                     if (!value.isEmpty()) {
-                        Rank.Entry entry = currentRank.setPermission(s1[0].trim(), value);
+                        String node = s1[0].trim();
+                        if (node.startsWith(Rank.NODE_TEMPORARY_PARENT_PREFIX)) {
+                            if (!loadTemporaryParent(currentRank, node, value)) save = true;
+                            lastComment = "";
+                            continue;
+                        }
+
+                        Rank.Entry entry = currentRank.setPermission(node, value);
 
                         if (entry != null) {
                             entry.comment = lastComment;
@@ -334,12 +350,14 @@ public class Ranks {
 
     public void save() {
         universe.clearCache();
+        long now = System.currentTimeMillis();
 
         List<String> list = new ArrayList<>();
         list.add("// For more info visit https://github.com/GTNewHorizons/ServerUtilities");
 
         for (Rank rank : ranks.values()) {
-            if (rank.permissions.isEmpty()) {
+            rank.temporaryParents.values().removeIf(grant -> grant.validUntil <= now);
+            if (rank.permissions.isEmpty() && rank.temporaryParents.isEmpty()) {
                 continue;
             }
 
@@ -358,6 +376,8 @@ public class Ranks {
 
                 list.add(entry.node + ": " + entry.value);
             }
+
+            appendTemporaryParents(list, rank);
         }
 
         FileUtils.saveSafe(ranksFile, list);
@@ -366,7 +386,8 @@ public class Ranks {
         list.add("// For more info visit https://github.com/GTNewHorizons/ServerUtilities");
 
         for (Rank rank : playerRanks.values()) {
-            if (rank.permissions.isEmpty()) {
+            rank.temporaryParents.values().removeIf(grant -> grant.validUntil <= now);
+            if (rank.permissions.isEmpty() && rank.temporaryParents.isEmpty()) {
                 continue;
             }
 
@@ -385,6 +406,8 @@ public class Ranks {
 
                 list.add(entry.node + ": " + entry.value);
             }
+
+            appendTemporaryParents(list, rank);
         }
 
         FileUtils.saveSafe(playersFile, list);
@@ -583,6 +606,58 @@ public class Ranks {
 
         for (PlayerRank rank : playerRanks.values()) {
             rank.clearCache();
+        }
+    }
+
+    public void temporaryGrantsChanged() {
+        nextTemporaryBoundary = 0L;
+        universe.clearCache();
+    }
+
+    public void refreshTemporaryGrants() {
+        long now = System.currentTimeMillis();
+        if (nextTemporaryBoundary != 0L && now < nextTemporaryBoundary) return;
+
+        long next = Long.MAX_VALUE;
+        for (Rank rank : allRanks()) {
+            for (Rank.TemporaryParent grant : rank.temporaryParents.values()) {
+                if (grant.validFrom > now) next = Math.min(next, grant.validFrom);
+                if (grant.validUntil > now) next = Math.min(next, grant.validUntil);
+            }
+        }
+
+        nextTemporaryBoundary = next;
+        universe.clearCache();
+    }
+
+    private Collection<Rank> allRanks() {
+        List<Rank> all = new ArrayList<>(ranks.values());
+        all.addAll(playerRanks.values());
+        return all;
+    }
+
+    private boolean loadTemporaryParent(Rank rank, String node, String value) {
+        String rankId = node.substring(Rank.NODE_TEMPORARY_PARENT_PREFIX.length());
+        String[] range = value.split(",", 2);
+        if (range.length != 2) return false;
+
+        try {
+            long validFrom = Long.parseLong(range[0].trim());
+            long validUntil = Long.parseLong(range[1].trim());
+            if (validFrom >= validUntil || validUntil <= System.currentTimeMillis()) return false;
+            rank.loadTemporaryParent(rankId, validFrom, validUntil);
+            return true;
+        } catch (NumberFormatException ignored) {
+            return false;
+        }
+    }
+
+    private static void appendTemporaryParents(List<String> lines, Rank rank) {
+        long now = System.currentTimeMillis();
+        for (Rank.TemporaryParent grant : rank.temporaryParents.values()) {
+            if (grant.validUntil <= now) continue;
+            lines.add(
+                    Rank.NODE_TEMPORARY_PARENT_PREFIX + grant.rankId + ": " + grant.validFrom + "," + grant.validUntil);
         }
     }
 
