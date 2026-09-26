@@ -106,6 +106,27 @@ public class CmdInfo extends CmdBase {
                                     TemporaryGrantTime.format(grant.validFrom, zone) + " -> "
                                             + TemporaryGrantTime.format(grant.validUntil, zone)),
                             grant.isActive(now) ? EnumChatFormatting.GREEN : EnumChatFormatting.AQUA));
+            t.appendText(" ");
+            if (grant.isActive(now)) {
+                t.appendSibling(
+                        StringUtils
+                                .color(
+                                        ServerUtilities.lang(
+                                                sender,
+                                                "commands.ranks.info.remaining",
+                                                StringUtils.getTimeString(
+                                                        TemporaryGrantTime.timeUntil(grant.validUntil, now))),
+                                        EnumChatFormatting.YELLOW));
+            } else {
+                t.appendSibling(
+                        StringUtils.color(
+                                ServerUtilities.lang(
+                                        sender,
+                                        "commands.ranks.info.scheduled",
+                                        StringUtils.getTimeString(TemporaryGrantTime.timeUntil(grant.validFrom, now)),
+                                        StringUtils.getTimeString(TemporaryGrantTime.timeUntil(grant.validUntil, now))),
+                                EnumChatFormatting.AQUA));
+            }
             t.getChatStyle().setChatClickEvent(
                     new ClickEvent(
                             ClickEvent.Action.SUGGEST_COMMAND,

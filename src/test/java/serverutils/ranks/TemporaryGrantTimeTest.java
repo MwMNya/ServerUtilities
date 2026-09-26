@@ -82,9 +82,7 @@ public class TemporaryGrantTimeTest {
 
         assertNotNull(range);
         assertEquals(existingStart, range.validFrom());
-        assertEquals(
-                LocalDateTime.of(2026, 11, 10, 8, 30).atZone(ZONE).toInstant().toEpochMilli(),
-                range.validUntil());
+        assertEquals(LocalDateTime.of(2026, 11, 10, 8, 30).atZone(ZONE).toInstant().toEpochMilli(), range.validUntil());
     }
 
     @Test
@@ -110,5 +108,12 @@ public class TemporaryGrantTimeTest {
         assertNotNull(range);
         assertEquals(LocalDateTime.of(2026, 10, 1, 0, 0).atZone(ZONE).toInstant().toEpochMilli(), range.validFrom());
         assertEquals(LocalDateTime.of(2026, 11, 1, 0, 0).atZone(ZONE).toInstant().toEpochMilli(), range.validUntil());
+    }
+
+    @Test
+    public void timeUntilNeverReturnsNegativeRemainingTime() {
+        assertEquals(10_000L, TemporaryGrantTime.timeUntil(20_000L, 10_000L));
+        assertEquals(0L, TemporaryGrantTime.timeUntil(10_000L, 10_000L));
+        assertEquals(0L, TemporaryGrantTime.timeUntil(9_000L, 10_000L));
     }
 }

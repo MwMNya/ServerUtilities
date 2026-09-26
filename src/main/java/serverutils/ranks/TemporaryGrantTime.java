@@ -86,8 +86,8 @@ public final class TemporaryGrantTime {
     }
 
     /**
-     * Parses a grant while preserving any unexpired time already owned by the target.
-     * Relative grants are appended to the existing end time; explicit date ranges remain absolute.
+     * Parses a grant while preserving any unexpired time already owned by the target. Relative grants are appended to
+     * the existing end time; explicit date ranges remain absolute.
      */
     @Nullable
     public static Range parseForGrant(String input, long now, ZoneId zone, @Nullable Range existing) {
@@ -103,6 +103,10 @@ public final class TemporaryGrantTime {
 
     private static boolean isRelative(String value) {
         return value.equals("month") || DURATION.matcher(value).matches();
+    }
+
+    public static long timeUntil(long timestamp, long now) {
+        return timestamp <= now ? 0L : timestamp - now;
     }
 
     public static String format(long timestamp, ZoneId zone) {
