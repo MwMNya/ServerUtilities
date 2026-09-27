@@ -13,6 +13,7 @@ public class ServerUtilitiesNetHandler {
 
     public static void init() {
         GENERAL.register(new MessageSyncData());
+        GENERAL.register(new MessageScoreboardConfig());
         GENERAL.register(new MessageNotification());
         GENERAL.registerBlank();
         GENERAL.register(new MessageCloseGui());

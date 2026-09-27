@@ -636,6 +636,7 @@ serverutilities.lang.homes.set=Home '%s' set!
 serverutilities.lang.homes.del=Home '%s' deleted!
 serverutilities.lang.homes.not_set=Unknown Home: '%s'!
 serverutilities.lang.homes.cooldown=You can only use home in %s!
+serverutilities.lang.homes.cross_dim=You can't teleport to another dimension!
 serverutilities.lang.homes.limit=You can't set any more home locations!
 serverutilities.lang.homes.spectator=Exit spectator mode first!
 
@@ -858,3 +859,5 @@ serverutilities.lang.tp2.successfully=Teleported to %s.
 
 serverutilities.lang.end.successfully1=Teleported to the End!
 serverutilities.lang.end.successfully=Teleported to the End!.
+commands.bc.hidden=Custom scoreboard hidden. Use /bc again to show it.
+commands.bc.shown=Custom scoreboard shown.

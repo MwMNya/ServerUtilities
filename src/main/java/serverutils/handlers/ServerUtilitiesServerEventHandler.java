@@ -38,6 +38,7 @@ import serverutils.ServerUtilitiesCommon;
 import serverutils.ServerUtilitiesConfig;
 import serverutils.ServerUtilitiesPermissions;
 import serverutils.ServerUtilitiesStats;
+import serverutils.client.scoreboard.AnimatedScoreboardConfig;
 import serverutils.data.ClaimedChunks;
 import serverutils.data.ServerUtilitiesPlayerData;
 import serverutils.data.ServerUtilitiesUniverseData;
@@ -50,6 +51,7 @@ import serverutils.lib.util.ServerUtils;
 import serverutils.lib.util.StringUtils;
 import serverutils.lib.util.permission.PermissionAPI;
 import serverutils.lib.util.text_components.TextComponentParser;
+import serverutils.net.MessageScoreboardConfig;
 import serverutils.net.MessageUpdatePlayTime;
 import serverutils.net.MessageUpdateTabName;
 import serverutils.pregenerator.ChunkLoaderManager;
@@ -217,6 +219,11 @@ public class ServerUtilitiesServerEventHandler {
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
+            if (AnimatedScoreboardConfig.reloadIfChanged()) {
+                MessageScoreboardConfig.fromCurrentConfig().sendToAll();
+                ServerUtilities.LOGGER.info("Reloaded scoreboard.cfg and synced it to all online players");
+            }
+
             Runnable task;
             while ((task = SERVER_TASKS.poll()) != null) {
                 try {

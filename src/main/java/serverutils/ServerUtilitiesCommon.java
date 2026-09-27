@@ -34,6 +34,7 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import serverutils.aurora.Aurora;
 import serverutils.aurora.AuroraConfig;
+import serverutils.client.scoreboard.AnimatedScoreboardConfig;
 import serverutils.command.ServerUtilitiesCommands;
 import serverutils.data.ServerUtilitiesLoadedChunkManager;
 import serverutils.dimension.ResourceWorldProvider;
@@ -85,6 +86,7 @@ public class ServerUtilitiesCommon {
 
     public void preInit(FMLPreInitializationEvent event) {
         OtherMods.init();
+        AnimatedScoreboardConfig.setConfigDirectory(event.getModConfigurationDirectory());
         if (ranks.enabled) {
             PermissionAPI.setPermissionHandler(ServerUtilitiesPermissionHandler.INSTANCE);
         }
@@ -137,6 +139,7 @@ public class ServerUtilitiesCommon {
     }
 
     public void onServerAboutToStart(FMLServerAboutToStartEvent event) {
+        AnimatedScoreboardConfig.loadFromDisk();
         ServerUtilitiesServerEventHandler.clearServerTasks();
         BackupTask.stopBackupThread();
         Universe.onServerAboutToStart(event);

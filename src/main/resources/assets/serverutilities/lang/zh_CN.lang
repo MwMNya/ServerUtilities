@@ -680,3 +680,5 @@ serverutilities.lang.tp2.successfully=已将你传送到 %s
 
 serverutilities.lang.end.successfully1=成功传送至末地.
 serverutilities.lang.end.successfully=成功传送至末地。
+commands.bc.hidden=已隐藏自定义计分板。再次使用 /bc 可恢复显示。
+commands.bc.shown=已显示自定义计分板。

@@ -45,6 +45,7 @@ import serverutils.lib.util.InvUtils;
 import serverutils.lib.util.ServerUtils;
 import serverutils.lib.util.StringUtils;
 import serverutils.lib.util.permission.PermissionAPI;
+import serverutils.net.MessageScoreboardConfig;
 import serverutils.net.MessageUpdateTabName;
 import serverutils.task.backup.BackupTask;
 
@@ -59,6 +60,7 @@ public class ServerUtilitiesPlayerEventHandler {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onPlayerLoggedIn(ForgePlayerLoggedInEvent event) {
         EntityPlayerMP player = event.getPlayer().getPlayer();
+        MessageScoreboardConfig.fromCurrentConfig().sendTo(player);
 
         if (ServerUtils.isFirstLogin(player, "serverutilities_starting_items")) {
             if (ServerUtilitiesConfig.login.enable_starting_items) {

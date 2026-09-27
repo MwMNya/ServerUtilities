@@ -28,6 +28,7 @@ import serverutils.command.client.CommandKaomoji;
 import serverutils.command.client.CommandPing;
 import serverutils.command.client.CommandPrintItem;
 import serverutils.command.client.CommandPrintState;
+import serverutils.command.client.CommandScoreboardToggle;
 import serverutils.command.client.CommandSimulateButton;
 import serverutils.integration.navigator.NavigatorIntegration;
 import serverutils.lib.OtherMods;
@@ -77,6 +78,7 @@ public class ServerUtilitiesClient extends ServerUtilitiesCommon {
         ClientCommandHandler.instance.registerCommand(new CommandPrintItem());
         ClientCommandHandler.instance.registerCommand(new CommandPrintState());
         ClientCommandHandler.instance.registerCommand(new CommandPing());
+        ClientCommandHandler.instance.registerCommand(new CommandScoreboardToggle());
 
         if (OtherMods.isNavigatorLoaded()) {
             NavigatorIntegration.init();
