@@ -28,6 +28,7 @@ import serverutils.lib.gui.misc.GuiChunkSelectorBase;
 import serverutils.lib.icon.Icon;
 import serverutils.lib.util.ServerUtils;
 import serverutils.lib.util.misc.MouseButton;
+import serverutils.net.MessageClaimedChunkTeleport;
 import serverutils.net.MessageClaimedChunksModify;
 import serverutils.net.MessageClaimedChunksRequest;
 import serverutils.net.MessageClaimedChunksUpdate;
@@ -183,6 +184,19 @@ public class GuiClaimedChunks extends GuiChunkSelectorBase {
     }
 
     @Override
+    public boolean onMapButtonClicked(MapButton button, MouseButton mouseButton) {
+        if (!mouseButton.isMiddle() || chunkData[button.index] == null) {
+            return false;
+        }
+
+        new MessageClaimedChunkTeleport(
+                Minecraft.getMinecraft().theWorld.provider.dimensionId,
+                button.chunkPos.chunkXPos,
+                button.chunkPos.chunkZPos).sendToServer();
+        return true;
+    }
+
+    @Override
     public void onChunksSelected(Collection<ChunkCoordIntPair> chunks) {
         new MessageClaimedChunksModify(startX, startZ, currentSelectionMode, chunks).sendToServer();
     }
@@ -304,6 +318,8 @@ public class GuiClaimedChunks extends GuiChunkSelectorBase {
             if (data.isLoaded()) {
                 list.add(EnumChatFormatting.RED + I18n.format("serverutilities.lang.chunks.upgrade.loaded"));
             }
+
+            list.add(EnumChatFormatting.AQUA + I18n.format("serverutilities.lang.chunks.teleport_hint"));
         } else {
             list.add(EnumChatFormatting.DARK_GREEN + I18n.format("serverutilities.lang.chunks.wilderness"));
         }

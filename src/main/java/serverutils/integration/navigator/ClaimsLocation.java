@@ -15,6 +15,7 @@ import com.gtnewhorizons.navigator.api.util.Util;
 
 import serverutils.client.gui.ClientClaimedChunks;
 import serverutils.lib.EnumTeamColor;
+import serverutils.net.MessageClaimedChunkTeleport;
 import serverutils.net.MessageClaimedChunksModify;
 import serverutils.net.MessageNavigatorRequest;
 
@@ -99,6 +100,14 @@ public class ClaimsLocation implements ILocationProvider {
     public String unclaimHint() {
         return EnumChatFormatting.DARK_GRAY + I18n
                 .format("serverutilities.jm.unclaim_hint", Keyboard.getKeyName(NavigatorApi.ACTION_KEY.getKeyCode()));
+    }
+
+    public String teleportHint() {
+        return EnumChatFormatting.AQUA + I18n.format("serverutilities.jm.teleport_hint");
+    }
+
+    public void teleport() {
+        new MessageClaimedChunkTeleport(getDimensionId(), getChunkX(), getChunkZ()).sendToServer();
     }
 
     public void toggleLoaded() {

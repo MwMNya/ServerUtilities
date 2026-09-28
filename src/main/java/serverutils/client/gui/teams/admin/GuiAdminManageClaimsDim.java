@@ -16,6 +16,7 @@ import serverutils.lib.util.ServerUtils;
 import serverutils.lib.util.misc.MouseButton;
 import serverutils.net.MessageAdminTeamAction;
 import serverutils.net.MessageAdminTeamClaimsList;
+import serverutils.net.MessageClaimedChunkTeleport;
 
 public class GuiAdminManageClaimsDim extends GuiButtonListBase {
 
@@ -72,9 +73,7 @@ public class GuiAdminManageClaimsDim extends GuiButtonListBase {
             GuiHelper.playClickSound();
 
             if (isShiftKeyDown()) {
-                NBTTagCompound data = newActionData();
-                data.setBoolean("teleport", true);
-                new MessageAdminTeamAction(teamId, MessageAdminTeamAction.CLAIMS, data).sendToServer();
+                new MessageClaimedChunkTeleport(entry.dim, entry.x, entry.z).sendToServer();
                 return;
             }
 

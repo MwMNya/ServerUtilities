@@ -60,6 +60,7 @@ public class ClaimsRenderStep extends UniversalLocationInteractableStep<ClaimsLo
         if (!location.loadedHint().isEmpty()) {
             list.add(location.loadedHint());
         }
+        list.add(location.teleportHint());
         if (location.isOwnTeam()) {
             list.add(location.claimHint());
             list.add(location.toggleLoadHint());

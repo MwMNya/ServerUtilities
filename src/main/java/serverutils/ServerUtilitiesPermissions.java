@@ -70,6 +70,8 @@ public class ServerUtilitiesPermissions {
     public static final String CLAIMS_OTHER_UNCLAIM = "serverutilities.other_player.claims.unclaim";
     public static final String CLAIMS_OTHER_LOAD = "serverutilities.other_player.claims.load";
     public static final String CLAIMS_OTHER_UNLOAD = "serverutilities.other_player.claims.unload";
+    public static final String CLAIMS_OTHER_TELEPORT = "serverutilities.other_player.claims.teleport";
+    public static final String CLAIMS_TELEPORT = "serverutilities.claims.teleport";
     public static final String CLAIMS_MAX_CHUNKS = "serverutilities.claims.max_chunks";
     public static final String CLAIMS_BLOCK_EDIT_PREFIX = "serverutilities.claims.block.edit";
     public static final String CLAIMS_BLOCK_INTERACT_PREFIX = "serverutilities.claims.block.interact";
@@ -185,6 +187,14 @@ public class ServerUtilitiesPermissions {
                 CLAIMS_OTHER_UNLOAD,
                 DefaultPermissionLevel.OP,
                 "Allow player to unload other team chunks");
+        PermissionAPI.registerNode(
+                CLAIMS_OTHER_TELEPORT,
+                DefaultPermissionLevel.OP,
+                "Allow player to teleport to another player's claimed chunks");
+        PermissionAPI.registerNode(
+                CLAIMS_TELEPORT,
+                DefaultPermissionLevel.ALL,
+                "Allow player to teleport to their team's claimed chunks");
         PermissionAPI.registerNode(
                 CLAIMS_BYPASS_LIMITS,
                 DefaultPermissionLevel.NONE,

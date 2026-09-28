@@ -35,6 +35,7 @@ public class ServerUtilitiesNetHandler {
         CLAIMS.register(new MessageClaimedChunksRequest());
         CLAIMS.register(new MessageClaimedChunksUpdate());
         CLAIMS.register(new MessageClaimedChunksModify());
+        CLAIMS.register(new MessageClaimedChunkTeleport());
         CLAIMS.register(new MessageNavigatorUpdate());
         CLAIMS.register(new MessageNavigatorRequest());
         CLAIMS.register(new MessageNavigatorUpdateKnown());

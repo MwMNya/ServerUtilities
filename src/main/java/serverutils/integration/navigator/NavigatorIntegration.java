@@ -7,6 +7,8 @@ import java.util.Objects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.ChunkCoordIntPair;
 
+import org.lwjgl.input.Keyboard;
+
 import com.gtnewhorizons.navigator.api.NavigatorApi;
 import com.gtnewhorizons.navigator.api.util.ClickPos;
 
@@ -109,7 +111,11 @@ public class NavigatorIntegration {
         if (!pos.isDoubleClick()) return false;
         if (pos.getLocationRenderStep() != null) {
             if (pos.getLocationRenderStep().getLocation() instanceof ClaimsLocation location) {
-                location.toggleLoaded();
+                if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+                    location.teleport();
+                } else if (location.isOwnTeam()) {
+                    location.toggleLoaded();
+                }
                 return true;
             }
             return false;

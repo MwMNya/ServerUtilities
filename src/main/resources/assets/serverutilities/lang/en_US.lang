@@ -838,6 +838,7 @@ serverutilities.jm.own_team=Your Team
 serverutilities.jm.claim=Double click an empty chunk to claim.
 serverutilities.jm.load_hint=Double click a claimed chunk to load/unload
 serverutilities.jm.unclaim_hint=Press %s to unclaim
+serverutilities.jm.teleport_hint=Shift-double-click to teleport here
 
 # Invsee GUI
 serverutilities.invsee.title=%s's %s
@@ -861,3 +862,10 @@ serverutilities.lang.end.successfully1=Teleported to the End!
 serverutilities.lang.end.successfully=Teleported to the End!.
 commands.bc.hidden=Custom scoreboard hidden. Use /bc again to show it.
 commands.bc.shown=Custom scoreboard shown.
+commands.chunks.tp.usage=/chunks tp [player]
+commands.chunks.tp.no_claims=%s's team has no claimed chunks.
+commands.chunks.tp.no_safe_position=No safe position was found in %s's claimed chunks.
+commands.chunks.tp.success=Teleported to %s's claimed chunk at [%s, %s] in dimension %s.
+commands.chunks.tp.not_claimed=Chunk [%s, %s] is no longer claimed.
+commands.chunks.tp.no_safe_chunk=No safe position was found in claimed chunk [%s, %s] in dimension %s.
+serverutilities.lang.chunks.teleport_hint=Middle-click to teleport to this chunk

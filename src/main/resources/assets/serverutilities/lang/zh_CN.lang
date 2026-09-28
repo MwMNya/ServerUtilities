@@ -671,6 +671,7 @@ serverutilities.jm.own_team=你的组
 serverutilities.jm.claim=双击一个空白区块进行声明。
 serverutilities.jm.load_hint=双击一个已声明的区块来加载/卸载
 serverutilities.jm.unclaim_hint=按下 %s 来解除声明
+serverutilities.jm.teleport_hint=按住 Shift 双击传送到此区块
 
 serverutilities.lang.setspawn.successfully=成功在x=%s，y=%s，z=%s设置重生点.
 serverutilities.lang.setworldspawn.successfully=成功在x=%s，y=%s，z=%s设置世界重生点.
@@ -682,3 +683,10 @@ serverutilities.lang.end.successfully1=成功传送至末地.
 serverutilities.lang.end.successfully=成功传送至末地。
 commands.bc.hidden=已隐藏自定义计分板。再次使用 /bc 可恢复显示。
 commands.bc.shown=已显示自定义计分板。
+commands.chunks.tp.usage=/chunks tp [玩家]
+commands.chunks.tp.no_claims=%s 所在的队伍没有已圈地块。
+commands.chunks.tp.no_safe_position=无法在 %s 的圈地中找到安全落点。
+commands.chunks.tp.success=已传送到 %s 的圈地：区块 [%s, %s]，维度 %s。
+commands.chunks.tp.not_claimed=区块 [%s, %s] 已不再是圈地。
+commands.chunks.tp.no_safe_chunk=无法在维度 %3$s 的圈地区块 [%1$s, %2$s] 内找到安全落点。
+serverutilities.lang.chunks.teleport_hint=中键点击传送到此区块

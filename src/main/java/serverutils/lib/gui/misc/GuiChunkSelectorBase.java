@@ -74,6 +74,11 @@ public class GuiChunkSelectorBase extends GuiBase {
         @Override
         public void onClicked(MouseButton button) {
             GuiHelper.playClickSound();
+
+            if (gui.onMapButtonClicked(this, button)) {
+                return;
+            }
+
             gui.currentSelectionMode = gui.getSelectionMode(button);
 
             if (gui.blockMode) {
@@ -285,6 +290,13 @@ public class GuiChunkSelectorBase extends GuiBase {
 
     public int getSelectionMode(MouseButton button) {
         return -1;
+    }
+
+    /**
+     * Handles a click before the normal drag-selection logic. Returning {@code true} consumes the click.
+     */
+    public boolean onMapButtonClicked(MapButton button, MouseButton mouseButton) {
+        return false;
     }
 
     public void onChunksSelected(Collection<ChunkCoordIntPair> chunks) {}

@@ -22,7 +22,8 @@ public enum TeleportType {
     END(ServerUtilitiesPermissions.END, ServerUtilitiesPermissions.END_WARMUP, ServerUtilitiesPermissions.END_COOLDOWN),
     RESPAWN(ServerUtilitiesPermissions.RESPAWN_BACK, null, null),
     VANILLA_TP(ServerUtilitiesPermissions.VANILLA_TP_BACK, null, null),
-    TP2(ServerUtilitiesPermissions.TP2, null, null);
+    TP2(ServerUtilitiesPermissions.TP2, null, null),
+    CLAIM(ServerUtilitiesPermissions.CLAIMS_TELEPORT, null, null);
 
     private final String permission;
     private final String warmup;
