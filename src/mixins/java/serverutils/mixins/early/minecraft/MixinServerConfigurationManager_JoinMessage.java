@@ -34,16 +34,12 @@ public class MixinServerConfigurationManager_JoinMessage {
         }
         if (configured == null || configured.trim().isEmpty()) return;
 
-        String playerName = "";
-        String displayName = "";
+        String playerName = player.getCommandSenderName();
+        String displayName = player.getDisplayName();
         String oldPlayerName = "";
 
         if (original instanceof ChatComponentTranslation translation) {
             Object[] arguments = translation.getFormatArgs();
-            if (arguments.length > 0 && arguments[0] instanceof IChatComponent playerComponent) {
-                playerName = playerComponent.getUnformattedText();
-                displayName = playerComponent.getFormattedText();
-            }
             if (arguments.length > 1) {
                 oldPlayerName = String.valueOf(arguments[1]);
             }

@@ -3,7 +3,6 @@ package serverutils.mixins.early.minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.management.ServerConfigurationManager;
-import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.ForgeHooks;
 
@@ -39,14 +38,7 @@ public class MixinNetHandlerPlayServer_LeaveMessage {
         if (configured == null || configured.trim().isEmpty()) return;
 
         String playerName = playerEntity.getCommandSenderName();
-        String displayName = playerName;
-        if (original instanceof ChatComponentTranslation translation) {
-            Object[] arguments = translation.getFormatArgs();
-            if (arguments.length > 0 && arguments[0] instanceof IChatComponent playerComponent) {
-                playerName = playerComponent.getUnformattedText();
-                displayName = playerComponent.getFormattedText();
-            }
-        }
+        String displayName = playerEntity.getDisplayName();
 
         String message = configured.replace("{player}", playerName).replace("{display_name}", displayName);
         originalCall.call(instance, ForgeHooks.newChatWithLinks(StringUtils.addFormatting(message)));
