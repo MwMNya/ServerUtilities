@@ -102,6 +102,10 @@ public class ServerUtilitiesPermissions {
     public static final String CHAT_TEXT_STRIKETHROUGH = "serverutilities.chat.text.strikethrough";
     public static final String CHAT_TEXT_OBFUSCATED = "serverutilities.chat.text.obfuscated";
 
+    // Login //
+    public static final String LOGIN_JOIN_MESSAGE = "serverutilities.login.join_message";
+    public static final String LOGIN_LEAVE_MESSAGE = "serverutilities.login.leave_message";
+
     // Other //
     public static final String INFINITE_BACK_USAGE = "serverutilities.back.infinite";
     public static final String CRASH_REPORTS_VIEW = "admin_panel.serverutilities.crash_reports.view";
@@ -345,6 +349,8 @@ public class ServerUtilitiesPermissions {
         handler.registerRankConfig(
                 CHAT_TEXT_COLOR,
                 new ConfigEnum<>(TextComponentParser.TEXT_FORMATTING_COLORS_NAME_MAP));
+        handler.registerRankConfig(LOGIN_JOIN_MESSAGE, new ConfigString(""));
+        handler.registerRankConfig(LOGIN_LEAVE_MESSAGE, new ConfigString(""));
         handler.registerRankConfig(HOMES_MAX, new ConfigInt(1, 0, 30000), new ConfigInt(100));
         handler.registerRankConfig(HOMES_COOLDOWN, new ConfigTimer(Ticks.MINUTE.x(5)), new ConfigTimer(Ticks.NO_TICKS));
         handler.registerRankConfig(WARPS_COOLDOWN, new ConfigTimer(Ticks.MINUTE), new ConfigTimer(Ticks.NO_TICKS));

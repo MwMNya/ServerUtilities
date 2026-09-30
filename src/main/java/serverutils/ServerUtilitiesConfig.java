@@ -391,6 +391,20 @@ public class ServerUtilitiesConfig {
         @Config.DefaultBoolean(true)
         public boolean give_player_menu_on_first_login;
 
+        @Config.Comment({ "Overrides the vanilla player join broadcast. Supports & color codes.",
+                "Variables: {player}, {display_name}, {old_player}. Set to an empty string to hide the message.",
+                "A rank-specific serverutilities.login.join_message value overrides this global message." })
+        @Config.Reloadable("join_message")
+        @Config.DefaultString("&e{player} joined the server")
+        public String join_message;
+
+        @Config.Comment({ "Overrides the vanilla player leave broadcast. Supports & color codes.",
+                "Variables: {player}, {display_name}. Set to an empty string to hide the message.",
+                "A rank-specific serverutilities.login.leave_message value overrides this global message." })
+        @Config.Reloadable("leave_message")
+        @Config.DefaultString("&e{player} left the server")
+        public String leave_message;
+
         @Config.Comment("Message of the day. This will be displayed when player joins the server.")
         @Config.Reloadable("login_motd")
         @Config.DefaultStringList("Hello player!")

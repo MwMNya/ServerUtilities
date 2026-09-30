@@ -146,6 +146,10 @@ serverutilities.login=Login
 serverutilities.login.enable_motd=Enable MOTD
 serverutilities.login.enable_starting_items=Enable Starting Items
 serverutilities.login.give_player_menu_on_first_login=Give Player Menu On First Login
+serverutilities.login.join_message=Player Join Message
+permission.serverutilities.login.join_message=Player Join Message (Rank Override)
+serverutilities.login.leave_message=Player Leave Message
+permission.serverutilities.login.leave_message=Player Leave Message (Rank Override)
 serverutilities.login.motd=Login MOTD
 serverutilities.login.starting_items=Starting Items
 

@@ -28,6 +28,11 @@ public enum Mixins implements IMixins {
     READABLE_SCOREBOARD_TEXT(new MixinBuilder("Make the vanilla sidebar scoreboard text fully opaque")
             .setPhase(Phase.EARLY)
             .addClientMixins("minecraft.MixinGuiIngame_ScoreboardTextColor")),
+    CUSTOM_JOIN_MESSAGE(new MixinBuilder("Replace vanilla player join and leave broadcasts with configurable messages")
+            .setPhase(Phase.EARLY)
+            .addServerMixins(
+                    "minecraft.MixinServerConfigurationManager_JoinMessage",
+                    "minecraft.MixinNetHandlerPlayServer_LeaveMessage")),
     VANILLA_TP_BACK_COMPAT(new MixinBuilder("/back compat for the vanilla /tp")
             .setPhase(Phase.EARLY)
             .setApplyIf(() -> commands.back)

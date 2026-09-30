@@ -215,6 +215,9 @@ public class ServerUtilitiesCommon {
             ServerUtilitiesLeaderboards.loadLeaderboards();
 
             if (event.getType().command()) {
+                ConfigurationManager.reloadConfig(ServerUtilitiesConfig.class, "join_message");
+                ConfigurationManager.reloadConfig(ServerUtilitiesConfig.class, "leave_message");
+
                 if (ServerUtilitiesConfig.login.enable_motd) {
                     ConfigurationManager.reloadConfig(ServerUtilitiesConfig.class, "login_motd");
                     ServerUtilitiesConfig.login.motdComponents = null;
