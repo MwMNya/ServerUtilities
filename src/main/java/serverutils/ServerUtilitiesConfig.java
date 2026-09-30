@@ -387,6 +387,10 @@ public class ServerUtilitiesConfig {
         @Config.DefaultBoolean(false)
         public boolean enable_starting_items;
 
+        @Config.Comment("Give the player menu item once when a player first joins the server.")
+        @Config.DefaultBoolean(true)
+        public boolean give_player_menu_on_first_login;
+
         @Config.Comment("Message of the day. This will be displayed when player joins the server.")
         @Config.Reloadable("login_motd")
         @Config.DefaultStringList("Hello player!")

@@ -53,6 +53,7 @@ import serverutils.net.ServerUtilitiesNetHandler;
 import serverutils.ranks.ICommandWithPermission;
 import serverutils.ranks.Rank;
 import serverutils.ranks.ServerUtilitiesPermissionHandler;
+import serverutils.registry.ServerUtilitiesItems;
 import serverutils.task.AnnouncementTask;
 import serverutils.task.CleanupTask;
 import serverutils.task.DecayTask;
@@ -86,6 +87,7 @@ public class ServerUtilitiesCommon {
 
     public void preInit(FMLPreInitializationEvent event) {
         OtherMods.init();
+        ServerUtilitiesItems.init();
         AnimatedScoreboardConfig.setConfigDirectory(event.getModConfigurationDirectory());
         if (ranks.enabled) {
             PermissionAPI.setPermissionHandler(ServerUtilitiesPermissionHandler.INSTANCE);
@@ -231,4 +233,6 @@ public class ServerUtilitiesCommon {
     public long getWorldTime() {
         return ServerUtils.getServerWorld().getTotalWorldTime();
     }
+
+    public void openPlayerMenu() {}
 }

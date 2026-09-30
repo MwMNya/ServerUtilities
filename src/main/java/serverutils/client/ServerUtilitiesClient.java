@@ -20,6 +20,7 @@ import serverutils.ServerUtilities;
 import serverutils.ServerUtilitiesCommon;
 import serverutils.ServerUtilitiesConfig;
 import serverutils.client.gui.BuiltinChunkMap;
+import serverutils.client.gui.GuiPlayerMenu;
 import serverutils.client.gui.SidebarButtonManager;
 import serverutils.client.tab.TabChannelHandler;
 import serverutils.client.tab.TabDisplayHandler;
@@ -40,7 +41,7 @@ import serverutils.lib.net.MessageToClient;
 
 public class ServerUtilitiesClient extends ServerUtilitiesCommon {
 
-    public static KeyBinding KEY_NBT, KEY_TRASH;
+    public static KeyBinding KEY_NBT, KEY_TRASH, KEY_PLAYER_MENU;
     public static final String KEY_CATEGORY = "key.categories.serverutilities";
     public static final String CLIENT_FOLDER = ServerUtilities.MOD_ID + "/client/";
     static {
@@ -62,6 +63,8 @@ public class ServerUtilitiesClient extends ServerUtilitiesCommon {
                 KEY_NBT = new KeyBinding("key.serverutilities.nbt", Keyboard.KEY_NONE, KEY_CATEGORY));
         ClientRegistry.registerKeyBinding(
                 KEY_TRASH = new KeyBinding("key.serverutilities.trash", Keyboard.KEY_NONE, KEY_CATEGORY));
+        ClientRegistry.registerKeyBinding(
+                KEY_PLAYER_MENU = new KeyBinding("key.serverutilities.player_menu", Keyboard.KEY_V, KEY_CATEGORY));
 
     }
 
@@ -107,5 +110,10 @@ public class ServerUtilitiesClient extends ServerUtilitiesCommon {
     public long getWorldTime() {
         return Minecraft.getMinecraft().theWorld == null ? super.getWorldTime()
                 : Minecraft.getMinecraft().theWorld.getTotalWorldTime();
+    }
+
+    @Override
+    public void openPlayerMenu() {
+        new GuiPlayerMenu().openGui();
     }
 }

@@ -79,7 +79,7 @@ public class GuiWrapper extends GuiScreen implements IGuiWrapper {
         int scroll = Mouse.getEventDWheel();
 
         if (scroll != 0) {
-            wrappedGui.mouseScrolled(scroll);
+            wrappedGui.mouseScrolled(Integer.signum(scroll));
         }
     }
 

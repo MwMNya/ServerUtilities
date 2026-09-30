@@ -124,6 +124,12 @@ public class ServerUtilitiesClientEventHandler {
         if (ServerUtilitiesClient.KEY_TRASH.isPressed()) {
             ClientUtils.execClientCommand("/trash_can");
         }
+
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc.currentScreen == null && GuiScreen.isCtrlKeyDown()
+                && ServerUtilitiesClient.KEY_PLAYER_MENU.isPressed()) {
+            ServerUtilities.PROXY.openPlayerMenu();
+        }
     }
 
     @SubscribeEvent

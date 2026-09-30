@@ -47,6 +47,7 @@ import serverutils.lib.util.StringUtils;
 import serverutils.lib.util.permission.PermissionAPI;
 import serverutils.net.MessageScoreboardConfig;
 import serverutils.net.MessageUpdateTabName;
+import serverutils.registry.ServerUtilitiesItems;
 import serverutils.task.backup.BackupTask;
 
 @EventBusSubscriber
@@ -66,6 +67,11 @@ public class ServerUtilitiesPlayerEventHandler {
             if (ServerUtilitiesConfig.login.enable_starting_items) {
                 InvUtils.giveItemFromIterable(player, ServerUtilitiesConfig.login.getStartingItems());
             }
+        }
+
+        if (ServerUtilitiesConfig.login.give_player_menu_on_first_login
+                && ServerUtils.isFirstLogin(player, "serverutilities_player_menu_item")) {
+            InvUtils.giveItem(player, new ItemStack(ServerUtilitiesItems.PLAYER_MENU));
         }
 
         if (ServerUtilitiesConfig.login.enable_motd) {
