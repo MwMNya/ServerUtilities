@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ICrafting;
@@ -203,6 +204,10 @@ public class InvUtils {
     }
 
     public static void forceUpdate(EntityPlayer player) {
+        // Fake players do not have a client to synchronize. Some automation mods also expose
+        // inventory containers whose slots do not match a vanilla InventoryPlayer, so walking
+        // those slots can crash while handling a cancelled interaction.
+        if (player instanceof EntityPlayerMP playerMP && ServerUtils.isFake(playerMP)) return;
         forceUpdate(player.inventoryContainer);
     }
 
